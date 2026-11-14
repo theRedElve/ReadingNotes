@@ -7,6 +7,10 @@
   var themes = S.THEMES;
   var themeMap = S.THEME_MAP;
 
+  function themesOf(item) { return S.themesOf(item); }
+  function countryOf(item) { return item.country || item.dynasty || ""; }
+  function translationOf(item) { return item.translation || ""; }
+
   var all = S.loadExcerpts();
   var favorites = S.favorites();
   var books = all.filter(function (item) { return typeOf(item) === "book"; });
@@ -163,7 +167,7 @@
 
   function viewFromHash() {
     var name = location.hash.replace("#", "");
-    return ["library", "screen", "themes", "about"].indexOf(name) !== -1 ? name : "library";
+    return ["library", "screen", "themes", "home"].indexOf(name) !== -1 ? name : "home";
   }
 
   function applyView() {
@@ -187,7 +191,7 @@
       if (bookState.author !== "all" && item.author !== bookState.author) return false;
       if (bookState.era !== "all" && item.era !== bookState.era) return false;
       if (!q) return true;
-      return [item.book, item.chapter, item.author, item.quote, item.note, item.publisher, item.year]
+      return [item.book, item.chapter, item.author, item.quote, item.translation, item.publisher, item.year, item.country, themesOf(item).join(" ")]
         .join(" ")
         .toLowerCase()
         .indexOf(q) !== -1;
@@ -201,7 +205,7 @@
           author: item.author,
           publisher: item.publisher,
           year: item.year,
-          theme: item.theme,
+          theme: themesOf(item)[0],
           items: [],
           latest: item.date
         });
@@ -234,7 +238,7 @@
           '<span class="quote-chapter">' + esc(item.chapter || "摘录") + "</span>" +
         "</div>" +
         '<blockquote>' + esc(item.quote) + "</blockquote>" +
-        '<p class="book-quote-note"><span>拾页按</span>' + esc(item.note) + "</p>" +
+        (translationOf(item) ? '<p class="book-quote-note"><span>译文</span>' + esc(translationOf(item)) + "</p>" : "") +
         '<div class="book-quote-foot">' +
           "<span>" + esc(S.formatDate(item.date)) + "</span>" +
           '<a href="#" data-open="' + esc(item.id) + '">读全文 →</a>' +
@@ -315,9 +319,9 @@
     var list = films.filter(function (item) {
       if (filmState.medium !== "all" && item.medium !== filmState.medium) return false;
       if (filmState.director !== "all" && item.author !== filmState.director) return false;
-      if (filmState.region !== "all" && item.dynasty !== filmState.region) return false;
+      if (filmState.region !== "all" && countryOf(item) !== filmState.region) return false;
       if (!q) return true;
-      return [item.book, item.chapter, item.author, item.quote, item.note, item.publisher, item.dynasty, item.year]
+      return [item.book, item.chapter, item.author, item.quote, item.translation, item.publisher, countryOf(item), item.year, themesOf(item).join(" ")]
         .join(" ")
         .toLowerCase()
         .indexOf(q) !== -1;
@@ -333,7 +337,7 @@
   }
 
   function filmCardHTML(item, delay) {
-    var theme = S.themeOf(item.theme);
+    var theme = S.themeOf(themesOf(item)[0]);
     var no = filmNumbering.get(item.book) || "00";
     var faved = favorites.has(item.id);
     return (
@@ -354,7 +358,7 @@
           "</div>" +
           '<div class="card-copy">' +
             '<span class="card-source"><span>' + esc(item.medium || "电影") + " · " +
-              esc(item.dynasty || "") + " · " + esc(item.year || "") + "</span>" +
+              esc(countryOf(item)) + " · " + esc(item.year || "") + "</span>" +
               '<span class="card-fav-mark"' + (faved ? "" : " hidden") + ">已藏</span></span>" +
             '<blockquote class="card-quote">' + esc(item.quote) + "</blockquote>" +
             '<div class="card-footer">' +
@@ -383,9 +387,9 @@
 
   function renderFilmOptions() {
     setOptions(els.film.director, uniqueAuthors(films), "全部导演", filmState.director);
-    var regions = Array.from(new Set(films.map(function (item) { return item.dynasty; }).filter(Boolean)))
+    var regions = Array.from(new Set(films.map(countryOf).filter(Boolean)))
       .sort(function (a, b) { return a.localeCompare(b, "zh-Hans-CN"); });
-    setOptions(els.film.region, regions, "全部地区", filmState.region);
+    setOptions(els.film.region, regions, "全部国家", filmState.region);
   }
 
   function resetFilmFilters() {
@@ -407,12 +411,12 @@
   function themeList() {
     var q = themeState.q.trim().toLowerCase();
     var list = all.filter(function (item) {
-      if (themeState.theme !== "all" && item.theme !== themeState.theme) return false;
+      if (themeState.theme !== "all" && themesOf(item).indexOf(themeState.theme) === -1) return false;
       if (themeState.type !== "all" && typeOf(item) !== themeState.type) return false;
       if (themeState.author !== "all" && item.author !== themeState.author) return false;
       if (themeState.fav === "fav" && !favorites.has(item.id)) return false;
       if (!q) return true;
-      return [item.quote, item.book, item.author, item.theme, item.note, item.publisher, item.year, item.chapter]
+      return [item.quote, item.book, item.author, themesOf(item).join(" "), item.translation, item.publisher, item.year, item.chapter, countryOf(item)]
         .join(" ")
         .toLowerCase()
         .indexOf(q) !== -1;
@@ -429,7 +433,7 @@
   }
 
   function themeCardHTML(item, delay) {
-    var theme = S.themeOf(item.theme);
+    var theme = S.themeOf(themesOf(item)[0]);
     var no = numbering.get(item.id) || "00";
     var faved = favorites.has(item.id);
     var isFilm = typeOf(item) === "film";
@@ -468,15 +472,15 @@
     var groups = [];
 
     themes.forEach(function (theme) {
-      var items = list.filter(function (item) { return item.theme === theme.name; });
+      var items = list.filter(function (item) { return themesOf(item).indexOf(theme.name) !== -1; });
       if (items.length) groups.push({ theme: theme, items: items });
     });
 
     var known = new Set(themes.map(function (theme) { return theme.name; }));
-    var extra = list.filter(function (item) { return !known.has(item.theme); });
+    var extra = list.filter(function (item) { return !known.has(themesOf(item)[0]); });
     if (extra.length) {
       groups.push({
-        theme: { name: extra[0].theme || "未分类", en: "MISC", color: "brown", char: "拾", index: 99 },
+        theme: { name: themesOf(extra[0])[0] || "未分类", en: "MISC", color: "brown", char: "拾", index: 99 },
         items: extra
       });
     }
@@ -545,7 +549,7 @@
   function renderStats() {
     var uniqueBookNames = new Set(books.map(function (item) { return item.book; })).size;
     var uniqueFilmNames = new Set(films.map(function (item) { return item.book; })).size;
-    var themeCount = new Set(all.map(function (item) { return item.theme; })).size;
+    var themeCount = new Set(all.reduce(function (acc, item) { return acc.concat(themesOf(item)); }, [])).size;
     setAll("[data-stat-books]", uniqueBookNames);
     setAll("[data-stat-book-lines]", books.length);
     setAll("[data-stat-works]", uniqueFilmNames);
@@ -572,12 +576,13 @@
   function renderToday() {
     if (!todayEntry) return;
     var item = todayEntry;
-    var theme = S.themeOf(item.theme);
+    var theme = S.themeOf(themesOf(item)[0]);
     els.today.card.className = "today-card is-" + theme.color;
-    els.today.label.textContent = "今日书摘 · " + (item.dynasty || "BOOK");
+    els.today.label.textContent = "今日书摘 · " + (countryOf(item) || "BOOK");
     els.today.quote.textContent = item.quote;
     els.today.source.textContent = sourceOf(item);
-    els.today.note.textContent = item.note;
+    els.today.note.textContent = translationOf(item);
+    els.today.note.hidden = !translationOf(item);
     els.today.char.textContent = theme.char;
     els.today.no.textContent = "NO. " + (bookNumbering.get(item.book) || "00");
     els.today.title.textContent = item.book;
@@ -628,7 +633,7 @@
     if (typeOf(item) === "film") {
       if (item.medium) parts.push(item.medium);
       if (item.year) parts.push(item.year);
-      if (item.dynasty) parts.push(item.dynasty);
+      if (countryOf(item)) parts.push(countryOf(item));
     } else {
       if (item.publisher) parts.push(item.publisher);
       if (item.year) parts.push(item.year);
@@ -641,7 +646,7 @@
   function renderReader() {
     var item = readerList[readerIndex];
     if (!item) return;
-    var theme = S.themeOf(item.theme);
+    var theme = S.themeOf(themesOf(item)[0]);
     var no = numbering.get(item.id) || "00";
     var root = els.reader.root;
 
@@ -650,7 +655,8 @@
     els.reader.theme.textContent = theme.name + " · " + theme.en;
     els.reader.quote.textContent = item.quote;
     els.reader.source.textContent = sourceOf(item);
-    els.reader.note.textContent = item.note || "—";
+    els.reader.note.textContent = translationOf(item);
+    els.reader.note.parentElement.hidden = !translationOf(item);
     els.reader.meta.textContent = readerMeta(item);
 
     var faved = favorites.has(item.id);
@@ -694,7 +700,7 @@
   function copyCurrent() {
     var item = readerList[readerIndex];
     if (!item) return;
-    var text = "“" + item.quote + "”\n—— " + sourceOf(item) + "\n\n拾页按：" + (item.note || "");
+    var text = "“" + item.quote + "”\n—— " + sourceOf(item) + (translationOf(item) ? "\n\n译文：" + translationOf(item) : "");
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(function () {
         S.toast("摘录已复制");

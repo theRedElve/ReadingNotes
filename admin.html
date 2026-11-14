@@ -19,6 +19,7 @@
     </a>
     <div class="topbar-actions">
       <span class="save-state" id="saveState">已载入文件数据</span>
+      <a class="button button-outline button-sm" href="content.html">全部内容</a>
       <a class="button button-outline button-sm" href="index.html">查看书摘馆 →</a>
     </div>
   </header>
@@ -27,15 +28,14 @@
     <section class="editor-intro">
       <span class="eyebrow">EDITOR'S DESK</span>
       <h1>更新内容</h1>
-      <p>在这里新增、修改或删除书摘与影视台词。每条内容需要先选类型，再填写对应的书籍信息（书名、作者、出版社、年份）或影视信息（片名、导演、出品方、上映年份）。改动会先保存在当前浏览器的草稿里，随即可在书摘馆、影视馆与主题馆看到；确认无误后导出数据文件，覆盖站点的 <code>data/excerpts.js</code>，再上传部署即可永久生效。</p>
     </section>
 
     <section class="update-guide" aria-labelledby="guideTitle">
       <h2 id="guideTitle">怎么让更新真正上线</h2>
       <ol>
-        <li>在这里增删改摘录。内容会即时写进浏览器的本地草稿，同一浏览器打开 <code>index.html</code> 就能看到效果。</li>
-        <li>确认排版无误后，点「导出 excerpts.js」，把下载的文件覆盖到站点的 <code>data/excerpts.js</code>。</li>
-        <li>重新上传整个站点目录到你的静态托管（GitHub Pages、Vercel、Netlify 或自己的服务器），更新即对所有访客生效。</li>
+        <li>在这里增删改摘录，内容会即时写入本地草稿，同一浏览器的书摘馆、影视馆与主题馆立即生效。</li>
+        <li>首次使用：打开「全部内容」页底部的「发布上线」，保存一个 Fine-grained GitHub 令牌（仅需本仓库 Contents 读写权限）。</li>
+        <li>之后每次保存、删除或恢复都会自动提交到 main 分支，GitHub Pages 约 1 分钟后对所有访客生效；也可在那里点「立即发布」。备用方式仍是导出 <code>excerpts.js</code> 后手动上传。</li>
       </ol>
     </section>
 
@@ -54,15 +54,23 @@
                 <option value="film">影视 · 台词</option>
               </select>
             </label>
-            <label class="field">
-              <span>主题 *</span>
-              <select id="f-theme" required></select>
-            </label>
           </div>
+
+          <fieldset class="field theme-field">
+            <span>主题（可多选）*</span>
+            <div class="theme-picker" id="f-themes"></div>
+          </fieldset>
 
           <label class="field">
             <span id="f-label-book">书名 *</span>
-            <input id="f-book" type="text" placeholder="例如：世说新语" required>
+            <select id="f-book" required></select>
+          </label>
+
+          <p class="field-hint" id="bookHint">已有书目可直接选择，会自动带入作者、出版社与年份；列表里没有时选择「＋ 新增书籍…」。</p>
+
+          <label class="field" id="newBookField" hidden>
+            <span id="f-label-new-book">新书名 *</span>
+            <input id="f-new-book" type="text" placeholder="输入新的书名">
           </label>
 
           <div class="field-row">
@@ -82,8 +90,8 @@
               <input id="f-year" type="text" inputmode="numeric" placeholder="例如：2011">
             </label>
             <label class="field">
-              <span id="f-label-place">朝代 / 年代</span>
-              <input id="f-dynasty" type="text" placeholder="例如：南朝宋">
+              <span id="f-label-place">国家</span>
+              <input id="f-country" type="text" placeholder="例如：中国">
             </label>
           </div>
 
@@ -114,8 +122,29 @@
           </label>
 
           <label class="field">
-            <span>拾页按（你的短评）</span>
-            <textarea id="f-note" rows="4" placeholder="写几句为什么留下它，会出现在详情页与今日一页。"></textarea>
+            <span>译文（可选）</span>
+            <textarea id="f-translation" rows="4" placeholder="如有译文可填在这里，留空则不显示。"></textarea>
+          </label>
+
+          <div class="field-row">
+            <label class="field">
+              <span>豆瓣标签</span>
+              <select id="f-douban"><option value="">未选择</option></select>
+            </label>
+            <label class="field">
+              <span>Why this?</span>
+              <select id="f-why"><option value="">未选择</option></select>
+            </label>
+          </div>
+
+          <label class="field" id="newDoubanField" hidden>
+            <span>新的豆瓣标签</span>
+            <input id="f-douban-new" type="text" placeholder="输入后保存，下次可直接选">
+          </label>
+
+          <label class="field" id="newWhyField" hidden>
+            <span>新的 Why this?</span>
+            <input id="f-why-new" type="text" placeholder="输入后保存，下次可直接选">
           </label>
 
           <div class="field-row">
@@ -124,7 +153,7 @@
               <input id="f-date" type="date">
             </label>
             <label class="check-field" data-for="book">
-              <input id="f-featured" type="checkbox">
+              <input id="f-featured" type="checkbox" checked>
               <span>放入「今日一页」候选</span>
             </label>
           </div>
@@ -134,45 +163,9 @@
             <button class="button button-outline button-sm" type="button" id="cancelBtn" hidden>取消编辑</button>
             <button class="btn-mini is-danger" type="button" id="deleteBtn" hidden>删除这一则</button>
           </div>
-          <p class="field-hint">带 * 的字段为必填。书籍摘录会按书名归入「书摘馆」，影视台词归入「影视馆」，两者都会出现在「主题馆」；只有书籍能进入「今日一页」。保存后写入本地草稿，不会改动已上传的文件。</p>
+          <p class="field-hint">带 * 的字段为必填，主题可多选。书籍摘录会按书名归入「书摘馆」，影视台词归入「影视馆」，两者都会按所选主题出现在「主题馆」；只有书籍能进入「今日一页」。保存后写入本地草稿，不会改动已上传的文件。</p>
         </form>
       </section>
-
-    <section class="editor-panel list-panel" aria-labelledby="listTitle">
-        <div class="panel-head">
-          <h2 id="listTitle">全部内容</h2>
-          <span class="count" id="listCount">0 则</span>
-        </div>
-
-        <div class="admin-tools">
-          <button class="btn-mini is-primary" type="button" id="exportJs">导出 excerpts.js</button>
-          <button class="btn-mini" type="button" id="exportJson">导出 JSON</button>
-          <label class="btn-mini" for="importFile" role="button" tabindex="0">导入数据</label>
-          <input id="importFile" type="file" accept=".js,.json,application/json,text/javascript" hidden>
-          <button class="btn-mini" type="button" id="resetFile">使用文件数据</button>
-          <button class="btn-mini" type="button" id="newBtn">＋ 新增</button>
-        </div>
-
-        <input class="admin-search" id="adminSearch" type="search" placeholder="搜索书名、片名、作者、导演或句子……" aria-label="搜索已有内容">
-
-        <div class="admin-filters">
-          <label>
-            <span>类型</span>
-            <select id="filterType">
-              <option value="all">全部类型</option>
-              <option value="book">书籍</option>
-              <option value="film">影视</option>
-            </select>
-          </label>
-          <label>
-            <span>添加年月</span>
-            <select id="filterMonth"><option value="all">全部月份</option></select>
-          </label>
-          <button class="btn-mini" type="button" id="clearFilters" hidden>清除筛选</button>
-        </div>
-
-        <div class="admin-list" id="adminList"></div>
-    </section>
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>

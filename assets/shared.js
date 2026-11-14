@@ -35,6 +35,13 @@
     return THEME_MAP[name] || { name: name || "未分类", en: "NOTE", color: "brown", char: "拾", index: 99 };
   }
 
+  function themesOf(item) {
+    var list = item && Array.isArray(item.themes) ? item.themes : [];
+    if (!list.length && item && item.theme) list = [item.theme];
+    var valid = list.filter(function (name) { return Boolean(THEME_MAP[name]); });
+    return valid.length ? valid : ["自我"];
+  }
+
   function formatDate(value) {
     if (!value) return "";
     return String(value).replace(/-/g, ".");
@@ -58,10 +65,24 @@
     }
   }
 
+  function dedupeWorks(list) {
+    var seen = new Map();
+    list.forEach(function (item) {
+      if (!item) return;
+      var key = (item.type === "film" ? "film" : "book") + "::" + String(item.book || "");
+      if (!seen.has(key)) {
+        seen.set(key, item);
+      } else if (item.featured && !seen.get(key).featured) {
+        seen.set(key, item);
+      }
+    });
+    return Array.from(seen.values());
+  }
+
   function loadExcerpts() {
     var draft = readDraft();
-    if (draft) return draft;
-    return Array.isArray(global.EXCERPTS) ? global.EXCERPTS.slice() : [];
+    if (draft) return dedupeWorks(draft);
+    return dedupeWorks(Array.isArray(global.EXCERPTS) ? global.EXCERPTS.slice() : []);
   }
 
   function saveDraft(list) {
@@ -82,7 +103,7 @@
   }
 
   function fileExcerpts() {
-    return Array.isArray(global.EXCERPTS) ? global.EXCERPTS.slice() : [];
+    return dedupeWorks(Array.isArray(global.EXCERPTS) ? global.EXCERPTS.slice() : []);
   }
 
   function download(filename, content, type) {
@@ -128,6 +149,114 @@
     }
   }
 
+  var TRASH_KEY = "shiye.trash.v1";
+  var TRASH_DAYS = 7;
+
+  function loadTrash() {
+    try {
+      var list = JSON.parse(localStorage.getItem(TRASH_KEY) || "[]");
+      if (!Array.isArray(list)) return [];
+      var cutoff = Date.now() - TRASH_DAYS * 86400000;
+      var kept = list.filter(function (entry) {
+        return entry && entry.item && new Date(entry.deletedAt).getTime() > cutoff;
+      });
+      if (kept.length !== list.length) {
+        localStorage.setItem(TRASH_KEY, JSON.stringify(kept));
+      }
+      return kept;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveTrash(list) {
+    try {
+      localStorage.setItem(TRASH_KEY, JSON.stringify(list));
+    } catch (error) {
+      /* ignore */
+    }
+  }
+
+  function addTrash(item) {
+    var list = loadTrash();
+    list.unshift({ deletedAt: new Date().toISOString(), item: item });
+    saveTrash(list);
+  }
+
+  var GH = { owner: "theRedElve", repo: "reading-notes", branch: "main", path: "data/excerpts.js" };
+  var GH_TOKEN_KEY = "shiye.gh.token.v1";
+
+  function getGhToken() {
+    try {
+      return localStorage.getItem(GH_TOKEN_KEY) || "";
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function setGhToken(token) {
+    try {
+      if (token) localStorage.setItem(GH_TOKEN_KEY, token);
+      else localStorage.removeItem(GH_TOKEN_KEY);
+    } catch (error) {
+      /* ignore */
+    }
+  }
+
+  function buildScript(list) {
+    var stamp = new Date().toLocaleString("zh-CN", { hour12: false });
+    return "/* 拾页 · 书摘数据\n * 由「全部内容」页导出于 " + stamp +
+      "\n * 用本文件覆盖站点的 data/excerpts.js 即可发布。\n */\nwindow.EXCERPTS = " +
+      JSON.stringify(list, null, 2) + ";\n";
+  }
+
+  function toBase64(text) {
+    var bytes = new TextEncoder().encode(text);
+    var binary = "";
+    for (var i = 0; i < bytes.length; i += 1) binary += String.fromCharCode(bytes[i]);
+    return btoa(binary);
+  }
+
+  function ghError(status) {
+    if (status === 401 || status === 403) return new Error("令牌无效，或没有 Contents 读写权限");
+    if (status === 404) return new Error("找不到仓库或文件，请检查仓库名与分支");
+    if (status === 409) return new Error("线上文件已被改动，请稍后重试");
+    return new Error("GitHub 返回 " + status);
+  }
+
+  function publishExcerpts(list) {
+    var token = getGhToken();
+    if (!token) return Promise.reject(new Error("尚未保存 GitHub 令牌"));
+    var api = "https://api.github.com/repos/" + GH.owner + "/" + GH.repo + "/contents/" + GH.path;
+    var headers = {
+      Authorization: "Bearer " + token,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json"
+    };
+
+    return fetch(api + "?ref=" + GH.branch, { headers: headers })
+      .then(function (response) {
+        if (!response.ok) throw ghError(response.status);
+        return response.json();
+      })
+      .then(function (info) {
+        return fetch(api, {
+          method: "PUT",
+          headers: headers,
+          body: JSON.stringify({
+            message: "chore: 更新摘录 " + new Date().toLocaleString("zh-CN", { hour12: false }),
+            content: toBase64(buildScript(list)),
+            sha: info.sha,
+            branch: GH.branch
+          })
+        });
+      })
+      .then(function (response) {
+        if (!response.ok) throw ghError(response.status);
+        return response.json();
+      });
+  }
+
   global.SHIYE = {
     THEMES: THEMES,
     THEME_MAP: THEME_MAP,
@@ -135,9 +264,17 @@
     FAV_KEY: FAV_KEY,
     esc: esc,
     themeOf: themeOf,
+    themesOf: themesOf,
     formatDate: formatDate,
     todayISO: todayISO,
     loadExcerpts: loadExcerpts,
+    loadTrash: loadTrash,
+    saveTrash: saveTrash,
+    addTrash: addTrash,
+    TRASH_DAYS: TRASH_DAYS,
+    getGhToken: getGhToken,
+    setGhToken: setGhToken,
+    publishExcerpts: publishExcerpts,
     fileExcerpts: fileExcerpts,
     saveDraft: saveDraft,
     clearDraft: clearDraft,

@@ -15,7 +15,7 @@
     <span class="header-rule" aria-hidden="true"></span>
     <div class="header-inner">
       <div class="sidebar-top">
-        <a class="brand" href="#library" aria-label="拾页书摘馆首页">
+        <a class="brand" href="#home" aria-label="拾页首页">
           <span class="brand-seal" aria-hidden="true">拾</span>
           <span class="brand-copy">
             <strong>拾页</strong>
@@ -25,6 +25,12 @@
       </div>
 
       <nav class="desktop-nav" aria-label="站内导航">
+        <a href="#home" data-nav="home">
+          <span class="nav-index" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.4 12 4l8 6.4V19a1 1 0 0 1-1 1h-4.4v-5.6H9.4V20H5a1 1 0 0 1-1-1z"/></svg>
+          </span>
+          <span class="nav-copy"><strong>首页</strong><small>HOME</small></span>
+        </a>
         <a href="#library" data-nav="library">
           <span class="nav-index">01</span>
           <span class="nav-copy"><strong>书摘馆</strong><small>THE BOOKSHELF</small></span>
@@ -37,21 +43,9 @@
           <span class="nav-index">03</span>
           <span class="nav-copy"><strong>主题馆</strong><small>BY THEME</small></span>
         </a>
-        <a href="#about" data-nav="about">
-          <span class="nav-index">04</span>
-          <span class="nav-copy"><strong>关于拾页</strong><small>COLOPHON</small></span>
-        </a>
       </nav>
 
       <div class="header-actions">
-        <button class="icon-button" type="button" data-random>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l10 10h3M4 17h3l3-3M14 8l3-3h3M17 2l3 3-3 3M17 16l3 3-3 3"/></svg>
-          <span class="action-label">随手翻一页</span>
-        </button>
-        <a class="edit-entry" href="admin.html">
-          <span>更新内容</span>
-          <small>EDITOR'S DESK →</small>
-        </a>
         <p class="sidebar-caption">把读过的句子，<br>留在能再遇见的地方。</p>
       </div>
     </div>
@@ -200,8 +194,8 @@
                 <select data-film-director><option value="all">全部导演</option></select>
               </label>
               <label>
-                <span>地区</span>
-                <select data-film-region><option value="all">全部地区</option></select>
+                <span>国家</span>
+                <select data-film-region><option value="all">全部国家</option></select>
               </label>
             </div>
           </form>
@@ -310,12 +304,20 @@
         </section>
       </section>
 
-      <!-- ================= 04 关于拾页 ================= -->
-      <section class="view about-page" id="about" data-view="about" hidden>
+      <!-- ================= 04 首页 ================= -->
+      <section class="view about-page" id="home" data-view="home" hidden>
+        <div class="home-topbar">
+          <div class="home-actions">
+            <button class="home-action" type="button" data-random>随手翻一页</button>
+            <a class="home-action is-solid" href="admin.html">更新内容</a>
+            <a class="home-action" href="content.html">全部内容</a>
+          </div>
+        </div>
+
         <header class="page-intro">
           <div>
-            <span class="eyebrow">COLOPHON</span>
-            <h1>关于拾页</h1>
+            <span class="eyebrow">HOME · SHIYE</span>
+            <h1>首页</h1>
             <p class="intro-sub">一间线上的书摘馆 · 2026</p>
           </div>
           <p class="intro-desc">「拾页」是一间很小的线上书摘馆。所有摘录按书归架，也可以按主题重读；银幕上的句子，另有一间影视馆。</p>
@@ -389,7 +391,7 @@
         <blockquote class="reader-quote" id="reader-quote" data-reader-quote></blockquote>
         <p class="reader-source" data-reader-source></p>
         <div class="reader-note">
-          <span class="note-label">拾页按</span>
+          <span class="note-label">译文</span>
           <p data-reader-note></p>
         </div>
         <div class="reader-meta">
