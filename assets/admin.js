@@ -123,14 +123,7 @@
     }
     hasDraft = true;
     setSaveState();
-    if (message) S.toast(message);
-    if (S.getGhToken()) {
-      S.publishExcerpts(data).then(function () {
-        S.toast("已保存并提交上线，约 1 分钟后生效");
-      }).catch(function (error) {
-        S.toast("已保存本地，上线失败：" + error.message);
-      });
-    }
+    if (message) S.toast(message + "（确认页面无误后到「全部内容」点「立即发布」）");
     return true;
   }
 

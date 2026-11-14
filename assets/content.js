@@ -101,7 +101,10 @@
     renderMonthOptions();
     renderList();
     if (message) S.toast(message);
-    if (S.getGhToken()) publish(false).catch(function () {});
+    if (S.getGhToken()) {
+      els.publishState.textContent = "有改动待发布";
+      els.publishNote.textContent = "改动已在本页生效，确认页面效果无误后点「立即发布」提交上线。";
+    }
   }
 
   function renderPublishState() {
