@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>拾页 · 书摘馆</title>
+  <meta name="description" content="拾页是一间线上的书摘馆：按书陈列书摘，按主题重读句子，也收藏银幕上的台词。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c3b36'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23f3eee3' font-family='serif'%3E%E6%8B%BE%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#library">跳到书摘馆</a>
+
+  <aside class="site-header">
+    <span class="header-rule" aria-hidden="true"></span>
+    <div class="header-inner">
+      <div class="sidebar-top">
+        <a class="brand" href="#library" aria-label="拾页书摘馆首页">
+          <span class="brand-seal" aria-hidden="true">拾</span>
+          <span class="brand-copy">
+            <strong>拾页</strong>
+            <small>SHIYE LIBRARY</small>
+          </span>
+        </a>
+      </div>
+
+      <nav class="desktop-nav" aria-label="站内导航">
+        <a href="#library" data-nav="library">
+          <span class="nav-index">01</span>
+          <span class="nav-copy"><strong>书摘馆</strong><small>THE BOOKSHELF</small></span>
+        </a>
+        <a href="#screen" data-nav="screen">
+          <span class="nav-index">02</span>
+          <span class="nav-copy"><strong>影视馆</strong><small>ON SCREEN</small></span>
+        </a>
+        <a href="#themes" data-nav="themes">
+          <span class="nav-index">03</span>
+          <span class="nav-copy"><strong>主题馆</strong><small>BY THEME</small></span>
+        </a>
+        <a href="#about" data-nav="about">
+          <span class="nav-index">04</span>
+          <span class="nav-copy"><strong>关于拾页</strong><small>COLOPHON</small></span>
+        </a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-button" type="button" data-random>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l10 10h3M4 17h3l3-3M14 8l3-3h3M17 2l3 3-3 3M17 16l3 3-3 3"/></svg>
+          <span class="action-label">随手翻一页</span>
+        </button>
+        <a class="edit-entry" href="admin.html">
+          <span>更新内容</span>
+          <small>EDITOR'S DESK →</small>
+        </a>
+        <p class="sidebar-caption">把读过的句子，<br>留在能再遇见的地方。</p>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="page-shell">
+
+      <!-- ================= 01 书摘馆：按书翻阅 ================= -->
+      <section class="view" id="library" data-view="library">
+        <header class="page-intro">
+          <div>
+            <span class="eyebrow">THE BOOKSHELF · 2026</span>
+            <h1>书摘馆</h1>
+            <p class="intro-sub"><strong data-stat-books>20</strong> 本书 · <strong data-stat-book-lines>24</strong> 则摘录</p>
+          </div>
+          <p class="intro-desc">以书为单位陈列。每一栏是一本书，书里被折角的那几页，连同版本信息，都收在这里。</p>
+        </header>
+
+        <section class="today-spread" id="today" aria-labelledby="today-title">
+          <div class="spread-heading">
+            <div>
+              <span class="eyebrow">PAGE OF THE DAY</span>
+              <h2 id="today-title">今日一页</h2>
+            </div>
+            <button class="text-button" type="button" data-today-change>换一页 ↻</button>
+          </div>
+
+          <article class="today-card is-time" data-today-card>
+            <div class="today-body">
+              <span class="today-theme" data-today-theme>时间 · TIME</span>
+              <blockquote class="today-quote" data-today-quote>人生如逆旅，我亦是行人。</blockquote>
+              <p class="today-source" data-today-source>苏轼《苏轼词集》</p>
+              <p class="today-note" data-today-note>把人生看作一家旅店，把自己看作过客，许多执念会松一点。不是不在乎，而是知道聚散本来如此。</p>
+              <div class="today-actions">
+                <button class="button button-outline button-sm" type="button" data-today-open>展开读 →</button>
+                <button class="button button-dark button-sm" type="button" data-today-fav>收藏此页</button>
+              </div>
+            </div>
+            <div class="today-plate" aria-hidden="true">
+              <span class="plate-bgchar" data-today-char>时</span>
+              <span class="plate-no" data-today-no>NO. 12</span>
+              <span class="plate-title" data-today-title>苏轼词集</span>
+              <span class="plate-seal">拾</span>
+              <span class="plate-meta">SHIYE · 今日一页</span>
+            </div>
+          </article>
+        </section>
+
+        <section class="library" id="bookshelf" aria-labelledby="bookshelf-heading">
+          <div class="library-heading">
+            <div>
+              <span class="eyebrow">THE BOOKS</span>
+              <h2 id="bookshelf-heading">按书翻阅</h2>
+            </div>
+            <p>共 <strong data-book-count>20</strong> 本书，<strong data-book-total>24</strong> 则摘录。每本书标注了作者、出版社与年份。</p>
+          </div>
+
+          <form class="library-tools" data-book-filter role="search">
+            <div class="search-field">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+              <input type="search" placeholder="搜索书名、作者或句子……" aria-label="搜索书摘" autocomplete="off" data-book-search>
+              <kbd>/</kbd>
+            </div>
+            <div class="filter-grid filter-grid-3">
+              <label>
+                <span>作者</span>
+                <select data-book-author><option value="all">全部作者</option></select>
+              </label>
+              <label>
+                <span>时代</span>
+                <select data-book-era>
+                  <option value="all">不限时代</option>
+                  <option value="古代">古代</option>
+                  <option value="近现代">近现代</option>
+                </select>
+              </label>
+              <label>
+                <span>排序</span>
+                <select data-book-sort>
+                  <option value="newest">最近收录</option>
+                  <option value="title">按书名</option>
+                  <option value="count">按摘录数量</option>
+                  <option value="author">按作者</option>
+                </select>
+              </label>
+            </div>
+          </form>
+
+          <div class="results-toolbar">
+            <p>共 <strong data-book-result>20</strong> 本书<button class="clear-filters" type="button" data-book-clear hidden>清除筛选</button></p>
+          </div>
+
+          <div class="book-list" data-book-list></div>
+
+          <div class="load-more-wrap">
+            <button class="button button-outline" type="button" data-book-more hidden>展开更多书目</button>
+          </div>
+
+          <div class="empty-state" data-book-empty hidden>
+            <span aria-hidden="true">空</span>
+            <h2>书架上暂时没有这本书</h2>
+            <p>换一个关键词，或者清除筛选再看看。</p>
+            <button class="button button-outline" type="button" data-book-clear>清除全部筛选</button>
+          </div>
+        </section>
+      </section>
+
+      <!-- ================= 02 影视馆 ================= -->
+      <section class="view" id="screen" data-view="screen" hidden>
+        <header class="page-intro">
+          <div>
+            <span class="eyebrow">ON SCREEN · 2026</span>
+            <h1>影视馆</h1>
+            <p class="intro-sub"><strong data-stat-works>9</strong> 部作品 · <strong data-stat-lines>9</strong> 则台词</p>
+          </div>
+          <p class="intro-desc">银幕上的句子，往往比剧情留得更久。这里收电影与剧集里值得回看的台词，也记下它们出自哪一场戏。</p>
+        </header>
+
+        <section class="library" aria-labelledby="screen-heading">
+          <div class="library-heading">
+            <div>
+              <span class="eyebrow">THE SCREEN</span>
+              <h2 id="screen-heading">银幕台词</h2>
+            </div>
+            <p>按作品收录，标注导演、年份、地区与类型。点击任意一页，展开完整台词与按语。</p>
+          </div>
+
+          <form class="library-tools" data-film-filter role="search">
+            <div class="search-field">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+              <input type="search" placeholder="搜索片名、导演或台词……" aria-label="搜索影视台词" autocomplete="off" data-film-search>
+              <kbd>/</kbd>
+            </div>
+            <div class="filter-grid filter-grid-3">
+              <label>
+                <span>类型</span>
+                <select data-film-medium>
+                  <option value="all">全部类型</option>
+                  <option value="电影">电影</option>
+                  <option value="剧集">剧集</option>
+                </select>
+              </label>
+              <label>
+                <span>导演</span>
+                <select data-film-director><option value="all">全部导演</option></select>
+              </label>
+              <label>
+                <span>地区</span>
+                <select data-film-region><option value="all">全部地区</option></select>
+              </label>
+            </div>
+          </form>
+
+          <div class="results-toolbar">
+            <p>共 <strong data-film-result>9</strong> 则台词<button class="clear-filters" type="button" data-film-clear hidden>清除筛选</button></p>
+            <div class="toolbar-right">
+              <label class="sort-field">
+                <span>排序</span>
+                <select data-film-sort>
+                  <option value="newest">最近收录</option>
+                  <option value="oldest">最早收录</option>
+                  <option value="title">按片名</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="excerpt-grid" data-film-grid></div>
+
+          <div class="empty-state" data-film-empty hidden>
+            <span aria-hidden="true">空</span>
+            <h2>暂时没有找到这一幕</h2>
+            <p>换一个关键词，或者清除筛选再看看。</p>
+            <button class="button button-outline" type="button" data-film-clear>清除全部筛选</button>
+          </div>
+        </section>
+      </section>
+
+      <!-- ================= 03 主题馆 ================= -->
+      <section class="view" id="themes" data-view="themes" hidden>
+        <header class="page-intro">
+          <div>
+            <span class="eyebrow">BY THEME · 2026</span>
+            <h1>主题馆</h1>
+            <p class="intro-sub"><strong data-stat-all>33</strong> 则 · <strong data-stat-theme-count>8</strong> 个主题</p>
+          </div>
+          <p class="intro-desc">把书摘与台词按主题重新排一次：孤独、时间、自由……看看不同的人，如何回答同一个问题。</p>
+        </header>
+
+        <section class="library" aria-labelledby="themes-heading">
+          <div class="library-heading">
+            <div>
+              <span class="eyebrow">THE THEMES</span>
+              <h2 id="themes-heading">主题书架</h2>
+            </div>
+            <p>只有在这里，内容按主题归架。切换主题，看看同一主题下书与电影如何互相照亮。</p>
+          </div>
+
+          <form class="library-tools" data-theme-filter role="search">
+            <div class="search-field">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+              <input type="search" placeholder="搜索句子、书名、作者……" aria-label="搜索主题馆" autocomplete="off" data-theme-search>
+              <kbd>/</kbd>
+            </div>
+            <div class="filter-grid filter-grid-4">
+              <label>
+                <span>主题</span>
+                <select data-theme-theme><option value="all">全部主题</option></select>
+              </label>
+              <label>
+                <span>类型</span>
+                <select data-theme-type>
+                  <option value="all">全部内容</option>
+                  <option value="book">书籍</option>
+                  <option value="film">影视</option>
+                </select>
+              </label>
+              <label>
+                <span>作者 / 导演</span>
+                <select data-theme-author><option value="all">全部作者</option></select>
+              </label>
+              <label>
+                <span>收藏</span>
+                <select data-theme-fav>
+                  <option value="all">全部摘录</option>
+                  <option value="fav">只看收藏</option>
+                </select>
+              </label>
+            </div>
+          </form>
+
+          <div class="results-toolbar">
+            <p>共 <strong data-theme-result>33</strong> 则<button class="clear-filters" type="button" data-theme-clear hidden>清除筛选</button></p>
+            <div class="toolbar-right">
+              <label class="sort-field">
+                <span>排序</span>
+                <select data-theme-sort>
+                  <option value="newest">最近收录</option>
+                  <option value="oldest">最早收录</option>
+                  <option value="book">按书名</option>
+                  <option value="author">按作者</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="shelves" data-shelves aria-live="polite"></div>
+
+          <div class="empty-state" data-theme-empty hidden>
+            <span aria-hidden="true">空</span>
+            <h2>书架上暂时没有这一页</h2>
+            <p>换一个关键词，或者清除筛选再看看。</p>
+            <button class="button button-outline" type="button" data-theme-clear>清除全部筛选</button>
+          </div>
+        </section>
+      </section>
+
+      <!-- ================= 04 关于拾页 ================= -->
+      <section class="view about-page" id="about" data-view="about" hidden>
+        <header class="page-intro">
+          <div>
+            <span class="eyebrow">COLOPHON</span>
+            <h1>关于拾页</h1>
+            <p class="intro-sub">一间线上的书摘馆 · 2026</p>
+          </div>
+          <p class="intro-desc">「拾页」是一间很小的线上书摘馆。所有摘录按书归架，也可以按主题重读；银幕上的句子，另有一间影视馆。</p>
+        </header>
+
+        <div class="about-body">
+          <p class="about-lead">书摘不是收藏，是反复回到的地方。</p>
+          <p>这个站点不追求读得多，只希望每一句被留下的句子，都还有被重新读到的机会。书摘馆以书为单位陈列，每本书标注作者、出版社与年份；主题馆则把这些句子重新按主题编排，让不同书、不同年代、甚至不同媒介的表达彼此照面。</p>
+          <p>影视馆收电影与剧集里的台词。它们和书摘一样，都是某个瞬间停住我们的表达，只是媒介不同。</p>
+          <div class="colophon-grid">
+            <div>
+              <span>01</span>
+              <strong>按书陈列</strong>
+              <p>每本书是一个栏目，保留版本信息与原书篇目。</p>
+            </div>
+            <div>
+              <span>02</span>
+              <strong>按主题重读</strong>
+              <p>主题馆把书籍与影视放在同一主题下重新排列。</p>
+            </div>
+            <div>
+              <span>03</span>
+              <strong>持续更新</strong>
+              <p>后台新增、修改后导出数据文件，即可发布新内容。</p>
+            </div>
+          </div>
+        </div>
+
+        <section class="about-strip">
+          <div class="about-copy">
+            <span class="eyebrow">EDITOR'S DESK</span>
+            <h2>想添一本新书，<br>或补一句台词？</h2>
+            <p>进入更新入口，填写书籍或影视信息与摘录，保存后导出 <code>excerpts.js</code> 覆盖站点数据文件即可。</p>
+          </div>
+          <div class="about-actions">
+            <a class="button button-paper" href="admin.html">更新内容 →</a>
+            <p class="about-hint">静态站点 · 本地草稿 · 一键导出</p>
+          </div>
+        </section>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="brand-seal" aria-hidden="true">拾</span>
+        <div>
+          <strong>拾页 · 书摘馆</strong>
+          <small>把读过的句子，留在能再遇见的地方。</small>
+        </div>
+      </div>
+      <nav class="footer-nav" aria-label="页脚导航">
+        <a href="#library">书摘馆</a>
+        <a href="#screen">影视馆</a>
+        <a href="#themes">主题馆</a>
+        <a href="admin.html">更新内容</a>
+      </nav>
+      <p class="footer-note">© <span data-year>2026</span> SHIYE LIBRARY · 摘录版权归原作者所有</p>
+    </div>
+  </footer>
+
+  <div class="reader" data-reader hidden>
+    <div class="reader-backdrop" data-reader-close></div>
+    <div class="reader-sheet" role="dialog" aria-modal="true" aria-labelledby="reader-quote" tabindex="-1">
+      <button class="reader-close" type="button" aria-label="关闭" data-reader-close>×</button>
+      <span class="reader-rail" data-reader-rail>拾页 · 摘录 NO. 01</span>
+      <div class="reader-sheet-body">
+        <span class="reader-theme" data-reader-theme>自我 · SELF</span>
+        <blockquote class="reader-quote" id="reader-quote" data-reader-quote></blockquote>
+        <p class="reader-source" data-reader-source></p>
+        <div class="reader-note">
+          <span class="note-label">拾页按</span>
+          <p data-reader-note></p>
+        </div>
+        <div class="reader-meta">
+          <span data-reader-meta></span>
+          <div class="reader-meta-actions">
+            <button class="text-button" type="button" data-reader-fav>收藏此页</button>
+            <button class="text-button" type="button" data-reader-copy>复制摘录</button>
+          </div>
+        </div>
+        <div class="reader-nav">
+          <button type="button" data-reader-prev>← 上一则</button>
+          <button type="button" data-reader-next>下一则 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="data/excerpts.js"></script>
+  <script src="assets/shared.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

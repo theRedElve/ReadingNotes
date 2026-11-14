@@ -1,0 +1,7 @@
+# 本地产物与工具缓存
+.screenshots/
+.trae-html-share-packages/
+
+# 系统文件
+Thumbs.db
+.DS_Store
