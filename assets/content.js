@@ -279,13 +279,6 @@
       return;
     }
     var restored = normalize(trash[index].item);
-    var conflict = data.some(function (row) {
-      return typeOf(row) === typeOf(restored) && row.book === restored.book;
-    });
-    if (conflict) {
-      S.toast("「" + restored.book + "」已有一条记录，无法恢复");
-      return;
-    }
     if (data.some(function (row) { return row.id === restored.id; })) restored.id = makeId();
     trash.splice(index, 1);
     S.saveTrash(trash);

@@ -432,14 +432,6 @@
       return;
     }
 
-    var duplicate = data.find(function (row) {
-      return typeOf(row) === draft.type && row.book === draft.book && row.id !== editingId;
-    });
-    if (duplicate) {
-      S.toast("「" + draft.book + "」已经有一条摘录，请到「全部内容」里编辑它");
-      return;
-    }
-
     if (editingId) {
       var index = data.findIndex(function (row) { return row.id === editingId; });
       if (index !== -1) {

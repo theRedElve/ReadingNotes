@@ -65,24 +65,10 @@
     }
   }
 
-  function dedupeWorks(list) {
-    var seen = new Map();
-    list.forEach(function (item) {
-      if (!item) return;
-      var key = (item.type === "film" ? "film" : "book") + "::" + String(item.book || "");
-      if (!seen.has(key)) {
-        seen.set(key, item);
-      } else if (item.featured && !seen.get(key).featured) {
-        seen.set(key, item);
-      }
-    });
-    return Array.from(seen.values());
-  }
-
   function loadExcerpts() {
     var draft = readDraft();
-    if (draft) return dedupeWorks(draft);
-    return dedupeWorks(Array.isArray(global.EXCERPTS) ? global.EXCERPTS.slice() : []);
+    if (draft) return draft;
+    return Array.isArray(global.EXCERPTS) ? global.EXCERPTS.slice() : [];
   }
 
   function saveDraft(list) {
@@ -103,7 +89,7 @@
   }
 
   function fileExcerpts() {
-    return dedupeWorks(Array.isArray(global.EXCERPTS) ? global.EXCERPTS.slice() : []);
+    return Array.isArray(global.EXCERPTS) ? global.EXCERPTS.slice() : [];
   }
 
   function download(filename, content, type) {
