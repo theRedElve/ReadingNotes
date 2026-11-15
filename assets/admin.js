@@ -36,6 +36,7 @@
       country: document.getElementById("f-country"),
       chapter: document.getElementById("f-chapter"),
       era: document.getElementById("f-era"),
+      eraNew: document.getElementById("f-era-new"),
       medium: document.getElementById("f-medium"),
       date: document.getElementById("f-date"),
       quote: document.getElementById("f-quote"),
@@ -67,7 +68,7 @@
       placePlaceholder: "例如：中国",
       chapterPlaceholder: "例如：品藻",
       quotePlaceholder: "贴入你想留下的句子……",
-      hint: "每本书只保留一条摘录。新增请选「＋ 新增书籍…」；要修改已收录的书，请到「全部内容」点「编辑」。"
+      hint: "同一本书可添加多条摘录。新增时选已有书名，或选「＋ 新增书籍…」；要修改已收录的摘录，请到「全部内容」点「编辑」。"
     },
     film: {
       book: "片名 *",
@@ -85,7 +86,7 @@
       placePlaceholder: "例如：美国",
       chapterPlaceholder: "例如：安迪写给瑞德的信",
       quotePlaceholder: "贴入你想留下的台词……",
-      hint: "每部影视只保留一条台词。新增请选「＋ 新增影视作品…」；要修改已收录的作品，请到「全部内容」点「编辑」。"
+      hint: "同一部影视可添加多条台词。新增时选已有片名，或选「＋ 新增影视作品…」；要修改已收录的台词，请到「全部内容」点「编辑」。"
     }
   };
 
@@ -149,7 +150,7 @@
       author: String(item.author || "佚名").trim(),
       publisher: String(item.publisher || "").trim(),
       year: String(item.year || "").trim(),
-      era: type === "film" ? "近现代" : (item.era === "近现代" ? "近现代" : "古代"),
+      era: String(item.era || "").trim(),
       country: String(item.country || item.dynasty || "").trim(),
       medium: type === "film" ? (item.medium === "剧集" ? "剧集" : "电影") : "",
       quote: String(item.quote || "").trim(),
@@ -208,6 +209,7 @@
   function renderTagOptions() {
     fillTagSelect(els.fields.douban, tagValues("doubanTag"), "＋ 新增标签…");
     fillTagSelect(els.fields.why, tagValues("whyThis"), "＋ 新增选项…");
+    renderEraOptions(els.fields.era.value);
     syncTagFields();
   }
 
@@ -218,6 +220,28 @@
 
   function tagValue(select, input) {
     return select.value === "__new__" ? input.value.trim() : select.value;
+  }
+
+  function eraValues() {
+    return tagValues("era");
+  }
+
+  function syncEraField() {
+    els.fields.eraNew.hidden = els.fields.era.value !== "__new__";
+  }
+
+  function renderEraOptions(selected) {
+    var values = eraValues();
+    els.fields.era.innerHTML = '<option value="">未选择</option>' + values.map(function (value) {
+      return '<option value="' + esc(value) + '">' + esc(value) + "</option>";
+    }).join("") + '<option value="__new__">＋ 新增时代…</option>';
+    els.fields.era.value = selected && (selected === "__new__" || values.indexOf(selected) !== -1) ? selected : "";
+    syncEraField();
+  }
+
+  function eraValue() {
+    if (els.fields.era.value !== "__new__") return els.fields.era.value;
+    return els.fields.eraNew.value.trim();
   }
 
   function selectedWorkName() {
@@ -256,7 +280,7 @@
     els.fields.country.value = "";
     els.fields.chapter.value = "";
     els.fields.newBook.value = "";
-    els.fields.era.value = "古代";
+    renderEraOptions("");
     els.fields.medium.value = "电影";
   }
 
@@ -270,7 +294,7 @@
     els.fields.publisher.value = sample.publisher || "";
     els.fields.year.value = sample.year || "";
     els.fields.country.value = sample.country || sample.dynasty || "";
-    els.fields.era.value = sample.era || "古代";
+    renderEraOptions(sample.era);
     els.fields.medium.value = sample.medium === "剧集" ? "剧集" : "电影";
   }
 
@@ -315,7 +339,8 @@
     els.fields.year.value = item.year || "";
     els.fields.country.value = item.country || item.dynasty || "";
     els.fields.chapter.value = item.chapter || "";
-    els.fields.era.value = item.era || "古代";
+    renderEraOptions(item.era);
+    els.fields.eraNew.value = "";
     els.fields.medium.value = item.medium === "剧集" ? "剧集" : "电影";
     els.fields.date.value = item.date || S.todayISO();
     els.fields.quote.value = item.quote;
@@ -333,7 +358,7 @@
     els.form.reset();
     els.fields.type.value = "book";
     setThemes([S.THEMES[0].name]);
-    els.fields.era.value = "古代";
+    renderEraOptions("");
     els.fields.medium.value = "电影";
     els.fields.date.value = S.todayISO();
     els.fields.featured.checked = true;
@@ -381,7 +406,7 @@
       year: els.fields.year.value.trim(),
       country: els.fields.country.value.trim(),
       chapter: els.fields.chapter.value.trim(),
-      era: els.fields.era.value,
+      era: eraValue(),
       medium: els.fields.medium.value,
       date: els.fields.date.value || S.todayISO(),
       quote: els.fields.quote.value.trim(),
@@ -471,6 +496,7 @@
   renderTagOptions();
   els.fields.douban.addEventListener("change", syncTagFields);
   els.fields.why.addEventListener("change", syncTagFields);
+  els.fields.era.addEventListener("change", syncEraField);
   setSaveState();
   resetForm(false);
 

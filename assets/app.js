@@ -299,6 +299,13 @@
     setOptions(els.book.author, uniqueAuthors(books), "全部作者", bookState.author);
   }
 
+  function renderBookEras() {
+    var values = Array.from(new Set(books.map(function (item) { return item.era; })))
+      .filter(Boolean)
+      .sort(function (a, b) { return a.localeCompare(b, "zh-Hans-CN"); });
+    setOptions(els.book.era, values, "不限时代", bookState.era);
+  }
+
   function resetBookFilters() {
     bookState.q = "";
     bookState.author = "all";
@@ -883,6 +890,7 @@
 
   renderStats();
   renderBookAuthors();
+  renderBookEras();
   renderFilmOptions();
   renderThemeOptions();
   renderBooks();

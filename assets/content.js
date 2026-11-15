@@ -68,7 +68,7 @@
       author: String(item.author || "佚名").trim(),
       publisher: String(item.publisher || "").trim(),
       year: String(item.year || "").trim(),
-      era: type === "film" ? "近现代" : (item.era === "近现代" ? "近现代" : "古代"),
+      era: String(item.era || "").trim(),
       country: String(item.country || item.dynasty || "").trim(),
       medium: type === "film" ? (item.medium === "剧集" ? "剧集" : "电影") : "",
       quote: String(item.quote || "").trim(),
