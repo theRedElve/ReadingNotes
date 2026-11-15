@@ -11,7 +11,20 @@
   function countryOf(item) { return item.country || item.dynasty || ""; }
   function translationOf(item) { return item.translation || ""; }
 
-  var all = S.loadExcerpts();
+  var workMap = {};
+  S.loadWorks().forEach(function (work) {
+    workMap[work.type + "::" + work.title] = work;
+  });
+
+  var all = S.loadExcerpts().map(function (item) {
+    var work = workMap[typeOf(item) + "::" + item.book];
+    if (!work) return item;
+    var merged = Object.assign({}, item);
+    ["author", "publisher", "year", "country", "era", "medium", "translator", "isbn", "cover"].forEach(function (key) {
+      if (work[key]) merged[key] = work[key];
+    });
+    return merged;
+  });
   var favorites = S.favorites();
   var books = all.filter(function (item) { return typeOf(item) === "book"; });
   var films = all.filter(function (item) { return typeOf(item) === "film"; });
