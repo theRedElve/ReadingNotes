@@ -169,7 +169,7 @@
     saveTrash(list);
   }
 
-  var GH = { owner: "theRedElve", repo: "reading-notes", branch: "main", path: "data/excerpts.js" };
+  var GH = { owner: "theRedElve", repo: "ReadingNotes", branch: "main", path: "data/excerpts.js" };
   var GH_TOKEN_KEY = "shiye.gh.token.v1";
 
   function getGhToken() {
