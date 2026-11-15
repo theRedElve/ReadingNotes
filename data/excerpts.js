@@ -1,8 +1,52 @@
 /* 拾页 · 书摘数据
- * 由「全部内容」页导出于 2026/11/14 23:57:22
+ * 由「全部内容」页导出于 2026/11/15 14:17:22
  * 用本文件覆盖站点的 data/excerpts.js 即可发布。
  */
 window.EXCERPTS = [
+  {
+    "id": "ex-mwhfz42051",
+    "type": "book",
+    "theme": "自我",
+    "themes": [
+      "自我"
+    ],
+    "book": "道德经",
+    "chapter": "第四十六章",
+    "author": "老子",
+    "publisher": "中华书局",
+    "year": "2017",
+    "era": "春秋",
+    "country": "中国",
+    "medium": "",
+    "quote": "11",
+    "translation": "",
+    "doubanTag": "",
+    "whyThis": "",
+    "date": "2026-11-15",
+    "featured": true
+  },
+  {
+    "id": "ex-mwgnkzbx96",
+    "type": "book",
+    "theme": "自我",
+    "themes": [
+      "自我"
+    ],
+    "book": "道德经",
+    "chapter": "11",
+    "author": "老子",
+    "publisher": "中华书局",
+    "year": "2017",
+    "era": "春秋",
+    "country": "中国",
+    "medium": "",
+    "quote": "11",
+    "translation": "",
+    "doubanTag": "TOP250",
+    "whyThis": "渴望新知",
+    "date": "2026-11-15",
+    "featured": true
+  },
   {
     "id": "self-daode",
     "type": "book",
@@ -15,7 +59,7 @@ window.EXCERPTS = [
     "author": "老子",
     "publisher": "中华书局",
     "year": "2008",
-    "era": "",
+    "era": "古代",
     "country": "中国",
     "medium": "",
     "quote": "知人者智，自知者明。胜人者有力，自胜者强。",
@@ -37,7 +81,7 @@ window.EXCERPTS = [
     "author": "朱塞佩·托纳多雷",
     "publisher": "Cristaldi Film",
     "year": "1988",
-    "era": "",
+    "era": "近现代",
     "country": "意大利",
     "medium": "电影",
     "quote": "如果你不出去走走，你就会以为这就是全世界。",
