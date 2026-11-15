@@ -6,7 +6,7 @@
   <title>新增内容 · 拾页</title>
   <meta name="description" content="拾页的新增与编辑页：填写书籍或影视信息与摘录，保存后写入本地草稿。">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c3b36'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23f3eee3' font-family='serif'%3E%E6%8B%BE%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="assets/style.css?v=20261115z8">
+  <link rel="stylesheet" href="assets/style.css?v=20261116j">
 </head>
 <body>
   <header class="editor-topbar">
@@ -39,7 +39,6 @@
           <strong id="workContextTitle">《道德经》</strong>
         </div>
         <h2 id="formTitle">新增一则书摘 / 台词</h2>
-        <span class="edit-badge" id="editBadge" hidden>正在编辑</span>
       </div>
 
       <form class="editor-form" id="excerptForm" novalidate>
@@ -160,8 +159,6 @@
 
         <div class="form-actions">
           <button class="button button-dark button-sm" type="submit" id="saveBtn">保存摘录</button>
-          <button class="button button-outline button-sm" type="button" id="cancelBtn" hidden>取消编辑</button>
-          <button class="btn-mini is-danger" type="button" id="deleteBtn" hidden>删除这一则</button>
         </div>
         <p class="field-hint">带 * 的字段为必填，主题可多选。书籍摘录会按书名归入「书摘馆」，影视台词归入「影视馆」，两者都会按所选主题出现在「主题馆」；只有书籍能进入「今日一页」。同一本书可以添加多条摘录。保存后写入本地草稿，确认无误后到「发布上线」提交。</p>
       </form>
@@ -171,7 +168,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="data/excerpts.js?v=20261115q"></script>
-  <script src="assets/shared.js?v=20261115q"></script>
-  <script src="assets/admin.js?v=20261115q"></script>
+  <script src="assets/shared.js?v=20261116j"></script>
+  <script src="assets/admin.js?v=20261116j"></script>
 </body>
 </html>

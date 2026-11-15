@@ -4,8 +4,6 @@
 
   var S = window.SHIYE;
   var esc = S.esc;
-  var themes = S.THEMES;
-  var themeMap = S.THEME_MAP;
 
   function themesOf(item) { return S.themesOf(item); }
   function countryOf(item) { return item.country || item.dynasty || ""; }
@@ -28,6 +26,10 @@
   var favorites = S.favorites();
   var books = all.filter(function (item) { return typeOf(item) === "book"; });
   var films = all.filter(function (item) { return typeOf(item) === "film"; });
+
+  var themes = S.allThemes(all.reduce(function (acc, item) { return acc.concat(themesOf(item)); }, []));
+  var themeMap = {};
+  themes.forEach(function (theme) { themeMap[theme.name] = theme; });
 
   var filmState = { q: "", medium: "all", director: "all", region: "all", sort: "newest" };
   var themeState = { q: "", theme: "all", type: "all", author: "all", fav: "all", sort: "newest" };

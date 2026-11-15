@@ -21,6 +21,42 @@
 
   var DRAFT_KEY = "shiye.draft.v1";
   var FAV_KEY = "shiye.favorites.v1";
+  var CUSTOM_THEME_KEY = "shiye.themes.v1";
+
+  function loadCustomThemes() {
+    try {
+      var list = JSON.parse(localStorage.getItem(CUSTOM_THEME_KEY) || "[]");
+      return Array.isArray(list) ? list.filter(function (name) { return typeof name === "string" && name.trim(); }) : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function addCustomTheme(name) {
+    var value = String(name || "").trim();
+    if (!value || THEME_MAP[value] || loadCustomThemes().indexOf(value) !== -1) return false;
+    var list = loadCustomThemes();
+    list.push(value);
+    try {
+      localStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify(list));
+    } catch (error) {
+      return false;
+    }
+    return true;
+  }
+
+  function allThemes(extraNames) {
+    var list = THEMES.slice();
+    var seen = {};
+    THEMES.forEach(function (theme) { seen[theme.name] = true; });
+    loadCustomThemes().concat(Array.isArray(extraNames) ? extraNames : []).forEach(function (name) {
+      var value = String(name || "").trim();
+      if (!value || seen[value]) return;
+      seen[value] = true;
+      list.push({ name: value, en: "CUSTOM", color: "brown", char: value.charAt(0), index: 99 });
+    });
+    return list;
+  }
 
   function esc(value) {
     return String(value == null ? "" : value)
@@ -38,7 +74,7 @@
   function themesOf(item) {
     var list = item && Array.isArray(item.themes) ? item.themes : [];
     if (!list.length && item && item.theme) list = [item.theme];
-    var valid = list.filter(function (name) { return Boolean(THEME_MAP[name]); });
+    var valid = list.filter(function (name) { return typeof name === "string" && name.trim(); });
     return valid.length ? valid : ["自我"];
   }
 
@@ -410,6 +446,9 @@
     esc: esc,
     themeOf: themeOf,
     themesOf: themesOf,
+    loadCustomThemes: loadCustomThemes,
+    addCustomTheme: addCustomTheme,
+    allThemes: allThemes,
     formatDate: formatDate,
     todayISO: todayISO,
     loadExcerpts: loadExcerpts,

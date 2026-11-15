@@ -10,10 +10,7 @@
     form: document.getElementById("excerptForm"),
     formTitle: document.getElementById("formTitle"),
     typeField: document.getElementById("typeField"),
-    editBadge: document.getElementById("editBadge"),
     saveBtn: document.getElementById("saveBtn"),
-    cancelBtn: document.getElementById("cancelBtn"),
-    deleteBtn: document.getElementById("deleteBtn"),
     labels: {
       book: document.getElementById("f-label-book"),
       newBook: document.getElementById("f-label-new-book"),
@@ -70,7 +67,7 @@
       placePlaceholder: "例如：中国",
       chapterPlaceholder: "例如：品藻",
       quotePlaceholder: "贴入你想留下的句子……",
-      hint: "同一本书可添加多条摘录。新增时选已有书名，或选「＋ 新增书籍…」；要修改已收录的摘录，请到「全部内容」点「编辑」。"
+      hint: "同一本书可添加多条摘录。新增时选已有书名，或选「＋ 新增书籍…」；已收录的摘录不支持修改，如需调整请先删除再重新添加。"
     },
     film: {
       book: "片名 *",
@@ -88,11 +85,10 @@
       placePlaceholder: "例如：美国",
       chapterPlaceholder: "例如：安迪写给瑞德的信",
       quotePlaceholder: "贴入你想留下的台词……",
-      hint: "同一部影视可添加多条台词。新增时选已有片名，或选「＋ 新增影视作品…」；要修改已收录的台词，请到「全部内容」点「编辑」。"
+      hint: "同一部影视可添加多条台词。新增时选已有片名，或选「＋ 新增影视作品…」；已收录的台词不支持修改，如需调整请先删除再重新添加。"
     }
   };
 
-  var editingId = null;
   var params = new URLSearchParams(window.location.search);
   var paramType = params.get("type");
   var lockedType = paramType === "film" ? "film" : (paramType === "book" ? "book" : "");
@@ -177,11 +173,64 @@
 
   /* ---------- form ---------- */
 
+  function themeNamesInData() {
+    var names = [];
+    data.forEach(function (item) {
+      S.themesOf(item).forEach(function (name) {
+        if (names.indexOf(name) === -1) names.push(name);
+      });
+    });
+    return names;
+  }
+
   function renderThemePicker() {
-    els.fields.themes.innerHTML = S.THEMES.map(function (theme) {
+    els.fields.themes.innerHTML = S.allThemes(themeNamesInData()).map(function (theme) {
       return '<label class="theme-option"><input type="checkbox" value="' + esc(theme.name) + '"><span>' +
         esc(theme.name) + "</span></label>";
-    }).join("");
+    }).join("") +
+      '<button class="theme-option theme-add" type="button" id="themeAdd">＋ 新增主题</button>';
+  }
+
+  function addThemeClicked() {
+    if (els.fields.themes.querySelector(".theme-add-input")) return;
+    var input = document.createElement("input");
+    input.type = "text";
+    input.className = "theme-add-input";
+    input.placeholder = "新主题名称";
+    input.maxLength = 12;
+    els.fields.themes.appendChild(input);
+    input.focus();
+
+    var finished = false;
+    function commit(save) {
+      if (finished) return;
+      finished = true;
+      var name = input.value.trim();
+      if (input.parentNode) input.parentNode.removeChild(input);
+      if (!save || !name) return;
+      if (S.THEME_MAP[name] || S.allThemes().some(function (theme) { return theme.name === name; })) {
+        S.toast("主题「" + name + "」已存在");
+        return;
+      }
+      if (!S.addCustomTheme(name)) {
+        S.toast("主题保存失败，请检查浏览器存储");
+        return;
+      }
+      var checked = getThemes();
+      renderThemePicker();
+      setThemes(checked.concat(name));
+      S.toast("已新增主题「" + name + "」");
+    }
+
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        commit(true);
+      } else if (event.key === "Escape") {
+        commit(false);
+      }
+    });
+    input.addEventListener("blur", function () { commit(true); });
   }
 
   function getThemes() {
@@ -373,36 +422,10 @@
 
     renderWorkOptions(type, selectedBook);
 
-    els.formTitle.textContent = (editingId ? "编辑" : "新增") + (type === "film" ? "一则影视台词" : "一则书籍摘录");
-  }
-
-  function fillForm(item) {
-    els.fields.type.value = typeOf(item);
-    applyType(item.book);
-    setThemes(S.themesOf(item));
-    els.fields.newBook.value = "";
-    els.fields.author.value = item.author;
-    els.fields.publisher.value = item.publisher || "";
-    els.fields.year.value = item.year || "";
-    els.fields.country.value = item.country || item.dynasty || "";
-    els.fields.chapter.value = item.chapter || "";
-    renderEraOptions(item.era);
-    els.fields.eraNew.value = "";
-    els.fields.medium.value = item.medium === "剧集" ? "剧集" : "电影";
-    els.fields.date.value = item.date || S.todayISO();
-    els.fields.quote.value = item.quote;
-    els.fields.translation.value = item.translation || "";
-    els.fields.douban.value = item.doubanTag || "";
-    els.fields.why.value = item.whyThis || "";
-    els.fields.doubanNew.value = "";
-    els.fields.whyNew.value = "";
-    syncTagFields();
-    syncWorkLock();
-    els.fields.featured.checked = Boolean(item.featured);
+    els.formTitle.textContent = "新增" + (type === "film" ? "一则影视台词" : "一则书籍摘录");
   }
 
   function resetForm(focus) {
-    editingId = null;
     els.form.reset();
     els.fields.type.value = lockedType || "book";
     setThemes([S.THEMES[0].name]);
@@ -421,28 +444,8 @@
     els.formTitle.textContent = lockedType === "film"
       ? "新增一则影视台词"
       : (lockedType === "book" ? "新增一则书籍摘录" : "新增一则书摘 / 台词");
-    els.editBadge.hidden = true;
-    els.cancelBtn.hidden = true;
-    els.deleteBtn.hidden = true;
     els.saveBtn.textContent = "保存内容";
     if (focus) els.fields.book.focus();
-  }
-
-  function startEdit(id, scroll) {
-    var item = data.find(function (row) { return row.id === id; });
-    if (!item) return false;
-    editingId = id;
-    fillForm(item);
-    els.formTitle.textContent = "编辑" + (typeOf(item) === "film" ? "影视台词" : "书籍摘录");
-    els.editBadge.hidden = false;
-    els.cancelBtn.hidden = false;
-    els.deleteBtn.hidden = false;
-    els.saveBtn.textContent = "保存修改";
-    if (scroll !== false) {
-      document.querySelector(".form-panel").scrollIntoView({ behavior: "smooth", block: "start" });
-      els.fields.book.focus({ preventScroll: true });
-    }
-    return true;
   }
 
   function startFromWork(id) {
@@ -532,18 +535,9 @@
     }
 
     var saved;
-    if (editingId) {
-      var index = data.findIndex(function (row) { return row.id === editingId; });
-      if (index !== -1) {
-        draft.id = editingId;
-        data[index] = normalize(draft);
-      }
-      saved = persist("已保存修改，可到「全部内容」查看");
-    } else {
-      draft.id = makeId();
-      data.unshift(normalize(draft));
-      saved = persist(isFilm ? "已新增一则影视台词" : "已新增一则书籍摘录");
-    }
+    draft.id = makeId();
+    data.unshift(normalize(draft));
+    saved = persist(isFilm ? "已新增一则影视台词" : "已新增一则书籍摘录");
 
     S.upsertWork({
       type: draft.type,
@@ -557,7 +551,7 @@
       medium: draft.medium
     });
 
-    if (saved && !editingId) {
+    if (saved) {
       window.location.href = isFilm ? "index.html#screen" : "index.html#library";
       return;
     }
@@ -566,26 +560,12 @@
     resetForm(false);
   });
 
-  els.cancelBtn.addEventListener("click", function () {
-    resetForm(false);
-    S.toast("已取消编辑");
-  });
-
-  els.deleteBtn.addEventListener("click", function () {
-    if (!editingId) return;
-    var item = data.find(function (row) { return row.id === editingId; });
-    if (!item) return;
-    S.addTrash(item);
-    data = data.filter(function (row) { return row.id !== editingId; });
-    persist("已删除，可在「全部内容 → 最近删除」恢复");
-    renderWorkOptions(els.fields.type.value === "film" ? "film" : "book");
-    renderTagOptions();
-    resetForm(false);
-  });
-
   /* ---------- init ---------- */
 
   renderThemePicker();
+  els.fields.themes.addEventListener("click", function (event) {
+    if (event.target.closest("#themeAdd")) addThemeClicked();
+  });
   renderTagOptions();
   els.fields.douban.addEventListener("change", syncTagFields);
   els.fields.why.addEventListener("change", syncTagFields);
@@ -599,10 +579,13 @@
 
   resetForm(false);
 
-  var editId = params.get("edit");
-  if (editId && !startEdit(editId, false)) {
-    S.toast("没有找到要编辑的内容");
-  } else if (!editId && workId) {
+  if (params.get("edit")) {
+    S.toast("已有摘录不支持修改，如需调整请先删除再重新添加");
+    window.location.replace("content.html");
+    return;
+  }
+
+  if (workId) {
     if (startFromWork(workId)) {
       var workName = els.fields.book.value;
       var isFilm = els.fields.type.value === "film";

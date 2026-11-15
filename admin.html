@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>管理台 · 拾页</title>
-  <meta name="description" content="拾页的管理台：进入内容管理、新增内容与发布上线。">
+  <meta name="description" content="拾页的管理台：进入作品库、内容管理与发布上线。">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c3b36'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23f3eee3' font-family='serif'%3E%E6%8B%BE%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="assets/style.css?v=20261115z8">
+  <link rel="stylesheet" href="assets/style.css?v=20261116j">
 </head>
 <body>
   <header class="editor-topbar">
@@ -34,19 +34,12 @@
     <section class="hub-groups" aria-label="管理入口">
       <div class="hub-group">
         <span class="hub-group-label">作品 · WORKS</span>
-        <div class="hub-grid hub-grid-2">
-          <a class="hub-card" href="works.html?type=book&new=1">
+        <div class="hub-grid hub-grid-1">
+          <a class="hub-card" href="works.html">
             <span class="hub-index">01</span>
-            <h2>添加书籍</h2>
-            <p>先登记书名、作者、出版社、年份与国家，不用写摘录；以后新增摘录时可直接选，资料会自动带入。</p>
-            <span class="hub-go">登记一本书 →</span>
-          </a>
-
-          <a class="hub-card" href="works.html?type=film&new=1">
-            <span class="hub-index">02</span>
-            <h2>添加影视</h2>
-            <p>登记片名、导演、出品方、上映年份与国家，并区分电影或剧集；之后加台词时不用重复填写。</p>
-            <span class="hub-go">登记一部影视 →</span>
+            <h2>作品库</h2>
+            <p>书籍与影视的档案都在这里：书名或片名、作者或导演、出版社或出品方、年份与国家、封面与 ISBN。登记一次，之后加摘录时直接选，资料自动带入；作品资料随时可以修改。</p>
+            <span class="hub-go">进入作品库 →</span>
           </a>
         </div>
       </div>
@@ -55,24 +48,20 @@
         <span class="hub-group-label">管理 · MANAGE</span>
         <div class="hub-grid hub-grid-2">
           <a class="hub-card" href="content.html">
-            <span class="hub-index">03</span>
+            <span class="hub-index">02</span>
             <h2>管理内容</h2>
-            <p>搜索、编辑、删除已有的书摘与台词。删除的内容会进 7 天回收站，随时可以恢复。</p>
+            <p>搜索、查看、删除已有的书摘与台词。已有内容不支持修改，需要调整请删除后重新添加；删除的内容会进 7 天回收站，随时可以恢复。</p>
             <span class="hub-go">进入全部内容 →</span>
           </a>
 
           <a class="hub-card" href="publish.html">
-            <span class="hub-index">04</span>
+            <span class="hub-index">03</span>
             <h2>发布上线</h2>
             <p>确认页面效果后，一键把本地草稿提交到 main 分支，约 1 分钟后对所有访客生效。</p>
             <span class="hub-go">去发布 →</span>
           </a>
         </div>
       </div>
-    </section>
-
-    <section class="hub-note">
-      <p>新增摘录不再单独入口：先到作品库找到那本书或那部影视，点卡片上的「＋ 加一条摘录」。作品库同时负责编辑、删除作品与补充封面。第一次使用？先在「发布上线」页保存一个 GitHub 令牌，之后每次改完都能直接发布。</p>
     </section>
   </main>
 </body>

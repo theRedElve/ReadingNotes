@@ -161,7 +161,6 @@
               (edition ? " · " + esc(edition) : "") + "</small>" +
           "</div>" +
           '<div class="admin-row-actions">' +
-            '<a href="admin-form.html?edit=' + encodeURIComponent(item.id) + '">编辑</a>' +
             '<button class="is-danger" type="button" data-action="delete" data-id="' + esc(item.id) + '">删除</button>' +
           "</div>" +
         "</div>"
