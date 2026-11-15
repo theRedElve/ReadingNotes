@@ -6,7 +6,7 @@
   <title>发布上线 · 拾页</title>
   <meta name="description" content="拾页的发布入口：保存 GitHub 令牌，确认页面效果后一键把本地草稿提交到 main 分支。">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c3b36'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23f3eee3' font-family='serif'%3E%E6%8B%BE%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/style.css?v=20261115r">
 </head>
 <body>
   <header class="editor-topbar">
@@ -51,6 +51,7 @@
         <span class="count" id="publishState">未连接</span>
       </div>
       <p class="field-hint" id="publishSummary">正在读取本地内容…</p>
+      <p class="field-hint publish-pending" id="publishPending">正在检查是否有未发布的改动…</p>
 
       <ol class="publish-steps">
         <li>
@@ -94,8 +95,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="data/excerpts.js"></script>
-  <script src="assets/shared.js"></script>
-  <script src="assets/publish.js"></script>
+  <script src="data/excerpts.js?v=20261115r"></script>
+  <script src="assets/shared.js?v=20261115r"></script>
+  <script src="assets/publish.js?v=20261115r"></script>
 </body>
 </html>

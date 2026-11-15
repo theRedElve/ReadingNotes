@@ -204,7 +204,10 @@
           book: item.book,
           author: item.author,
           publisher: item.publisher,
+          isbn: item.isbn,
           year: item.year,
+          translator: item.translator,
+          cover: item.cover,
           theme: themesOf(item)[0],
           items: [],
           latest: item.date
@@ -251,10 +254,18 @@
     var theme = S.themeOf(group.theme);
     var no = bookNumbering.get(group.book) || "00";
     var quotes = group.items.map(quoteHTML).join("");
+    var work = S.loadWorks().find(function (row) {
+      return row.type !== "film" && row.title === group.book;
+    });
+    var addHref = work
+      ? "admin-form.html?work=" + encodeURIComponent(work.id)
+      : "works.html?type=book";
     return (
       '<article class="book-shelf is-' + theme.color + '">' +
         '<div class="book-aside">' +
-          '<div class="card-cover book-cover">' +
+          (group.cover
+            ? '<div class="card-cover book-cover has-photo"><img class="cover-photo" src="' + esc(group.cover) + '" alt="《' + esc(group.book) + '》封面"></div>'
+            : '<div class="card-cover book-cover">' +
             '<div class="cover-inner">' +
               '<div class="cover-top"><span>拾页藏书</span><span>NO. ' + no + "</span></div>" +
               '<div class="cover-middle">' +
@@ -266,13 +277,18 @@
                 '<span class="cover-seal" aria-hidden="true">拾</span>' +
               "</div>" +
             "</div>" +
-          "</div>" +
+          "</div>") +
           '<div class="book-info">' +
             "<h2>" + esc(group.book) + "</h2>" +
             '<p class="book-author">' + esc(group.author) + "</p>" +
+            (group.translator ? '<p class="book-translator">译 ' + esc(group.translator) + "</p>" : "") +
             '<p class="book-edition">' + esc(group.publisher || "版本待补") +
-              (group.year ? " · " + esc(group.year) : "") + "</p>" +
-            '<span class="book-count">' + group.items.length + " 则摘录</span>" +
+              (group.year ? " · " + esc(group.year) : "") +
+              (group.isbn ? " · ISBN " + esc(group.isbn) : "") + "</p>" +
+            '<div class="book-meta">' +
+              '<span class="book-count">' + group.items.length + " 则摘录</span>" +
+              '<a class="book-add" href="' + addHref + '">＋ 添加书摘</a>' +
+            "</div>" +
           "</div>" +
         "</div>" +
         '<div class="book-quotes">' + quotes + "</div>" +
@@ -350,8 +366,10 @@
     return (
       '<article class="excerpt-card film-card is-' + theme.color + '" style="--d:' + delay + 'ms">' +
         '<a class="card-link" href="#" data-open="' + esc(item.id) + '">' +
-          '<div class="card-cover">' +
-            '<div class="cover-inner">' +
+          '<div class="card-cover' + (item.cover ? " has-photo" : "") + '">' +
+            (item.cover
+              ? '<img class="cover-photo" src="' + esc(item.cover) + '" alt="《' + esc(item.book) + '》封面">'
+              : '<div class="cover-inner">' +
               '<div class="cover-top"><span>拾页藏影</span><span>NO. ' + no + "</span></div>" +
               '<div class="cover-middle">' +
                 '<span class="cover-char" aria-hidden="true">影</span>' +
@@ -361,7 +379,7 @@
                 '<span class="cover-author">' + esc(item.author) + "</span>" +
                 '<span class="cover-seal" aria-hidden="true">拾</span>' +
               "</div>" +
-            "</div>" +
+            "</div>") +
           "</div>" +
           '<div class="card-copy">' +
             '<span class="card-source"><span>' + esc(item.medium || "电影") + " · " +
@@ -447,8 +465,10 @@
     return (
       '<article class="excerpt-card is-' + theme.color + '" style="--d:' + delay + 'ms">' +
         '<a class="card-link" href="#" data-open="' + esc(item.id) + '">' +
-          '<div class="card-cover">' +
-            '<div class="cover-inner">' +
+          '<div class="card-cover' + (item.cover ? " has-photo" : "") + '">' +
+            (item.cover
+              ? '<img class="cover-photo" src="' + esc(item.cover) + '" alt="《' + esc(item.book) + '》封面">'
+              : '<div class="cover-inner">' +
               '<div class="cover-top"><span>' + (isFilm ? "拾页藏影" : "拾页藏书") + "</span><span>NO. " + no + "</span></div>" +
               '<div class="cover-middle">' +
                 '<span class="cover-char" aria-hidden="true">' + esc(isFilm ? "影" : theme.char) + "</span>" +
@@ -458,7 +478,7 @@
                 '<span class="cover-author">' + esc(item.author) + "</span>" +
                 '<span class="cover-seal" aria-hidden="true">拾</span>' +
               "</div>" +
-            "</div>" +
+            "</div>") +
           "</div>" +
           '<div class="card-copy">' +
             '<span class="card-source"><span>' + esc(theme.name) + " · " + esc(theme.en) + "</span>" +

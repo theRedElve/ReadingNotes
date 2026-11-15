@@ -6,7 +6,7 @@
   <title>新增内容 · 拾页</title>
   <meta name="description" content="拾页的新增与编辑页：填写书籍或影视信息与摘录，保存后写入本地草稿。">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c3b36'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23f3eee3' font-family='serif'%3E%E6%8B%BE%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/style.css?v=20261115o">
 </head>
 <body>
   <header class="editor-topbar">
@@ -26,7 +26,7 @@
   </header>
 
   <main class="editor-main">
-    <section class="editor-intro">
+    <section class="editor-intro" id="introBlock">
       <span class="eyebrow">EDITOR'S DESK</span>
       <h1 id="pageTitle">新增内容</h1>
       <p>填写书籍或影视信息与摘录，保存后写入本地草稿，同一浏览器的站点会立即生效。</p>
@@ -34,12 +34,16 @@
 
     <section class="editor-panel form-panel" aria-labelledby="formTitle">
       <div class="panel-head">
+        <div class="work-context" id="workContext" hidden>
+          <span class="work-context-label" id="workContextLabel">作品库 · 书籍</span>
+          <strong id="workContextTitle">《道德经》</strong>
+        </div>
         <h2 id="formTitle">新增一则书摘 / 台词</h2>
         <span class="edit-badge" id="editBadge" hidden>正在编辑</span>
       </div>
 
       <form class="editor-form" id="excerptForm" novalidate>
-        <div class="field-row">
+        <div class="field-row" id="typeField">
           <label class="field">
             <span>类型 *</span>
             <select id="f-type">
@@ -61,6 +65,8 @@
 
         <p class="field-hint" id="bookHint">已有书目可直接选择，会自动带入作者、出版社与年份；列表里没有时选择「＋ 新增书籍…」。</p>
 
+        <p class="field-hint work-link-hint" id="workLinkHint" hidden>作品信息已关联「作品库」，这里只读；要修改请到 <a href="works.html">作品库</a> 编辑该作品。</p>
+
         <label class="field" id="newBookField" hidden>
           <span id="f-label-new-book">新书名 *</span>
           <input id="f-new-book" type="text" placeholder="输入新的书名">
@@ -77,7 +83,7 @@
           </label>
         </div>
 
-        <div class="field-row">
+        <div class="field-row" hidden>
           <label class="field">
             <span id="f-label-year">出版年份</span>
             <input id="f-year" type="text" inputmode="numeric" placeholder="例如：2011">
@@ -93,7 +99,7 @@
             <span id="f-label-chapter">篇目 / 章节</span>
             <input id="f-chapter" type="text" placeholder="例如：品藻">
           </label>
-          <label class="field" data-for="book">
+          <label class="field" data-for="book" data-always-hidden hidden>
             <span>时代</span>
             <select id="f-era">
               <option value="">未选择</option>
@@ -164,8 +170,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="data/excerpts.js"></script>
-  <script src="assets/shared.js"></script>
-  <script src="assets/admin.js"></script>
+  <script src="data/excerpts.js?v=20261115q"></script>
+  <script src="assets/shared.js?v=20261115q"></script>
+  <script src="assets/admin.js?v=20261115q"></script>
 </body>
 </html>

@@ -130,7 +130,9 @@
     });
 
     var filtering = Boolean(q) || filterType !== "all" || filterMonth !== "all";
-    els.listCount.textContent = filtering ? list.length + " / " + data.length + " 则" : data.length + " 则";
+    var worksCount = S.loadWorks().length;
+    els.listCount.textContent = (filtering ? list.length + " / " + data.length + " 则" : data.length + " 则") +
+      " · 作品库 " + worksCount + " 个";
     els.clearFilters.hidden = !filtering;
 
     if (!list.length) {
@@ -259,13 +261,7 @@
   /* ---------- import / export ---------- */
 
   els.exportJs.addEventListener("click", function () {
-    var content =
-      "/* 拾页 · 书摘数据\n" +
-      " * 由「全部内容」页导出于 " + new Date().toLocaleString("zh-CN") + "\n" +
-      " * 用本文件覆盖站点的 data/excerpts.js 即可发布。\n" +
-      " */\n" +
-      "window.EXCERPTS = " + JSON.stringify(data, null, 2) + ";\n";
-    S.download("excerpts.js", content, "text/javascript;charset=utf-8");
+    S.download("excerpts.js", S.buildScript(data, S.loadWorks()), "text/javascript;charset=utf-8");
     S.toast("已导出 excerpts.js，请覆盖 data/excerpts.js");
   });
 
@@ -325,6 +321,7 @@
     }
     if (!window.confirm("放弃本地草稿，恢复为 data/excerpts.js 里的内容？")) return;
     S.clearDraft();
+    S.clearWorksDraft();
     hasDraft = false;
     data = S.fileExcerpts().map(normalize);
     listQuery = "";

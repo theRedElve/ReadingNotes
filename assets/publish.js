@@ -10,8 +10,52 @@
     publishNow: document.getElementById("publishNow"),
     publishState: document.getElementById("publishState"),
     publishNote: document.getElementById("publishNote"),
-    publishSummary: document.getElementById("publishSummary")
+    publishSummary: document.getElementById("publishSummary"),
+    publishPending: document.getElementById("publishPending")
   };
+
+  var SNAPSHOT_KEY = "shiye.published-hash.v1";
+
+  function payloadHash() {
+    var text = JSON.stringify({ e: S.loadExcerpts(), w: S.loadWorks() });
+    var hash = 5381;
+    for (var i = 0; i < text.length; i += 1) {
+      hash = ((hash * 33) ^ text.charCodeAt(i)) >>> 0;
+    }
+    return String(hash);
+  }
+
+  function readSnapshot() {
+    try {
+      return localStorage.getItem(SNAPSHOT_KEY) || "";
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function writeSnapshot(value) {
+    try {
+      localStorage.setItem(SNAPSHOT_KEY, value);
+    } catch (error) {
+      /* ignore */
+    }
+  }
+
+  function renderPending() {
+    var stored = readSnapshot();
+    if (!stored) {
+      els.publishPending.textContent = "还没有发布记录；保存令牌后即可提交当前内容。";
+      els.publishNow.disabled = false;
+      return;
+    }
+    if (stored === payloadHash()) {
+      els.publishPending.textContent = "已与线上一致，暂无未发布的改动。";
+      els.publishNow.disabled = true;
+      return;
+    }
+    els.publishPending.textContent = "有未发布的改动，确认页面效果后发布。";
+    els.publishNow.disabled = false;
+  }
 
   function renderSummary() {
     var list = S.loadExcerpts();
@@ -20,7 +64,9 @@
     list.forEach(function (item) {
       (item.type === "film" ? films : books).add(item.book);
     });
-    els.publishSummary.textContent = "当前内容：" + books.size + " 本书 · " + films.size + " 部影视 · 共 " + list.length + " 则。";
+    var works = S.loadWorks().length;
+    els.publishSummary.textContent = "当前内容：" + books.size + " 本书 · " + films.size + " 部影视 · 共 " +
+      list.length + " 则摘录；作品库 " + works + " 个档案。";
   }
 
   function renderPublishState() {
@@ -35,7 +81,9 @@
   function publish(showToast) {
     els.publishState.textContent = "正在提交…";
     els.publishNote.textContent = "正在把本地内容提交到 GitHub…";
-    return S.publishExcerpts(S.loadExcerpts()).then(function () {
+    return S.publishExcerpts(S.loadExcerpts(), S.loadWorks()).then(function () {
+      writeSnapshot(payloadHash());
+      renderPending();
       els.publishState.textContent = "已提交 · 约 1 分钟生效";
       els.publishNote.textContent = "已提交到 main 分支，GitHub Pages 通常 1 分钟内更新。";
       if (showToast) S.toast("已提交上线");
@@ -78,4 +126,5 @@
 
   renderSummary();
   renderPublishState();
+  renderPending();
 })();

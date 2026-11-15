@@ -9,6 +9,7 @@
     saveState: document.getElementById("saveState"),
     form: document.getElementById("excerptForm"),
     formTitle: document.getElementById("formTitle"),
+    typeField: document.getElementById("typeField"),
     editBadge: document.getElementById("editBadge"),
     saveBtn: document.getElementById("saveBtn"),
     cancelBtn: document.getElementById("cancelBtn"),
@@ -25,6 +26,7 @@
     },
     newBookField: document.getElementById("newBookField"),
     bookHint: document.getElementById("bookHint"),
+    workLinkHint: document.getElementById("workLinkHint"),
     fields: {
       type: document.getElementById("f-type"),
       themes: document.getElementById("f-themes"),
@@ -91,6 +93,14 @@
   };
 
   var editingId = null;
+  var params = new URLSearchParams(window.location.search);
+  var paramType = params.get("type");
+  var lockedType = paramType === "film" ? "film" : (paramType === "book" ? "book" : "");
+  var workId = params.get("work") || "";
+
+  if (!workId && !params.get("edit")) {
+    window.location.replace("works.html");
+  }
 
   /* ---------- helpers ---------- */
 
@@ -149,8 +159,11 @@
       chapter: String(item.chapter || item.page || "").trim(),
       author: String(item.author || "佚名").trim(),
       publisher: String(item.publisher || "").trim(),
+      isbn: type === "book" ? String(item.isbn || "").trim() : "",
       year: String(item.year || "").trim(),
       era: String(item.era || "").trim(),
+      translator: type === "book" ? String(item.translator || "").trim() : "",
+      cover: String(item.cover || ""),
       country: String(item.country || item.dynasty || "").trim(),
       medium: type === "film" ? (item.medium === "剧集" ? "剧集" : "电影") : "",
       quote: String(item.quote || "").trim(),
@@ -254,11 +267,21 @@
   }
 
   function renderWorkOptions(type, selected) {
-    var works = Array.from(new Set(data.filter(function (item) {
+    var names = S.loadWorks().filter(function (work) {
+      return work.type === type;
+    }).map(function (work) {
+      return work.title;
+    });
+
+    names = names.concat(data.filter(function (item) {
       return typeOf(item) === type;
     }).map(function (item) {
       return item.book;
-    }))).sort(function (a, b) { return a.localeCompare(b, "zh"); });
+    }));
+
+    var works = Array.from(new Set(names.filter(Boolean))).sort(function (a, b) {
+      return a.localeCompare(b, "zh");
+    });
 
     var options = '<option value="">' + (type === "film" ? "请选择影视作品" : "请选择书名") + "</option>";
     options += works.map(function (name) {
@@ -286,7 +309,10 @@
 
   function fillFromWork(name) {
     var type = els.fields.type.value === "film" ? "film" : "book";
-    var sample = data.find(function (item) {
+    var work = S.loadWorks().find(function (row) {
+      return row.type === type && row.title === name;
+    });
+    var sample = work || data.find(function (item) {
       return typeOf(item) === type && item.book === name;
     });
     if (!sample) return;
@@ -298,11 +324,32 @@
     els.fields.medium.value = sample.medium === "剧集" ? "剧集" : "电影";
   }
 
+  function isArchivedWork(name) {
+    if (!name) return false;
+    var type = els.fields.type.value === "film" ? "film" : "book";
+    return S.loadWorks().some(function (row) {
+      return row.type === type && row.title === name;
+    });
+  }
+
+  function syncWorkLock() {
+    var locked = els.fields.book.value !== "__new__" && isArchivedWork(selectedWorkName());
+    [els.fields.author, els.fields.publisher, els.fields.year, els.fields.country].forEach(function (field) {
+      field.readOnly = locked;
+    });
+    els.fields.era.disabled = locked;
+    els.fields.eraNew.disabled = locked;
+    els.fields.medium.disabled = locked;
+    els.workLinkHint.hidden = !locked;
+    els.form.classList.toggle("is-work-linked", locked);
+  }
+
   function applyType(selectedBook) {
     var type = els.fields.type.value === "film" ? "film" : "book";
     var copy = TYPE_COPY[type];
 
     document.querySelectorAll("[data-for]").forEach(function (node) {
+      if (node.hasAttribute("data-always-hidden")) return;
       node.hidden = node.getAttribute("data-for") !== type;
     });
 
@@ -350,13 +397,14 @@
     els.fields.doubanNew.value = "";
     els.fields.whyNew.value = "";
     syncTagFields();
+    syncWorkLock();
     els.fields.featured.checked = Boolean(item.featured);
   }
 
   function resetForm(focus) {
     editingId = null;
     els.form.reset();
-    els.fields.type.value = "book";
+    els.fields.type.value = lockedType || "book";
     setThemes([S.THEMES[0].name]);
     renderEraOptions("");
     els.fields.medium.value = "电影";
@@ -369,7 +417,10 @@
     els.fields.whyNew.value = "";
     syncTagFields();
     applyType();
-    els.formTitle.textContent = "新增一则书摘 / 台词";
+    syncWorkLock();
+    els.formTitle.textContent = lockedType === "film"
+      ? "新增一则影视台词"
+      : (lockedType === "book" ? "新增一则书籍摘录" : "新增一则书摘 / 台词");
     els.editBadge.hidden = true;
     els.cancelBtn.hidden = true;
     els.deleteBtn.hidden = true;
@@ -394,19 +445,39 @@
     return true;
   }
 
+  function startFromWork(id) {
+    var work = S.loadWorks().find(function (row) { return row.id === id; });
+    if (!work) return false;
+    els.fields.type.value = work.type;
+    applyType(work.title);
+    fillFromWork(work.title);
+    toggleNewBook();
+    syncWorkLock();
+    els.fields.quote.focus();
+    return true;
+  }
+
   function readForm() {
     var themes = getThemes();
+    var type = els.fields.type.value;
+    var work = S.loadWorks().find(function (row) {
+      return (row.type === "film" ? "film" : "book") === (type === "film" ? "film" : "book") &&
+        row.title === selectedWorkName();
+    });
     return {
-      type: els.fields.type.value,
+      type: type,
       theme: themes[0] || "",
       themes: themes,
       book: selectedWorkName(),
       author: els.fields.author.value.trim(),
       publisher: els.fields.publisher.value.trim(),
+      isbn: type === "film" ? "" : (work ? work.isbn || "" : ""),
       year: els.fields.year.value.trim(),
       country: els.fields.country.value.trim(),
       chapter: els.fields.chapter.value.trim(),
       era: eraValue(),
+      translator: type === "film" ? "" : (work ? work.translator || "" : ""),
+      cover: work ? work.cover || "" : "",
       medium: els.fields.medium.value,
       date: els.fields.date.value || S.todayISO(),
       quote: els.fields.quote.value.trim(),
@@ -422,15 +493,18 @@
   els.fields.type.addEventListener("change", function () {
     clearWorkFields();
     applyType();
+    syncWorkLock();
   });
 
   els.fields.book.addEventListener("change", function () {
     toggleNewBook();
     if (els.fields.book.value === "__new__") {
+      syncWorkLock();
       els.fields.newBook.focus();
       return;
     }
     fillFromWork(els.fields.book.value);
+    syncWorkLock();
   });
 
   els.form.addEventListener("submit", function (event) {
@@ -457,17 +531,35 @@
       return;
     }
 
+    var saved;
     if (editingId) {
       var index = data.findIndex(function (row) { return row.id === editingId; });
       if (index !== -1) {
         draft.id = editingId;
         data[index] = normalize(draft);
       }
-      persist("已保存修改，可到「全部内容」查看");
+      saved = persist("已保存修改，可到「全部内容」查看");
     } else {
       draft.id = makeId();
       data.unshift(normalize(draft));
-      persist(isFilm ? "已新增一则影视台词" : "已新增一则书籍摘录");
+      saved = persist(isFilm ? "已新增一则影视台词" : "已新增一则书籍摘录");
+    }
+
+    S.upsertWork({
+      type: draft.type,
+      title: draft.book,
+      author: draft.author,
+      publisher: draft.publisher,
+      isbn: draft.isbn,
+      year: draft.year,
+      country: draft.country,
+      era: draft.era,
+      medium: draft.medium
+    });
+
+    if (saved && !editingId) {
+      window.location.href = isFilm ? "index.html#screen" : "index.html#library";
+      return;
     }
 
     renderTagOptions();
@@ -499,10 +591,32 @@
   els.fields.why.addEventListener("change", syncTagFields);
   els.fields.era.addEventListener("change", syncEraField);
   setSaveState();
+
+  if (lockedType) {
+    els.typeField.hidden = true;
+    document.getElementById("pageTitle").textContent = lockedType === "film" ? "新增影视摘录" : "新增书籍摘录";
+  }
+
   resetForm(false);
 
-  var editId = new URLSearchParams(window.location.search).get("edit");
+  var editId = params.get("edit");
   if (editId && !startEdit(editId, false)) {
     S.toast("没有找到要编辑的内容");
+  } else if (!editId && workId) {
+    if (startFromWork(workId)) {
+      var workName = els.fields.book.value;
+      var isFilm = els.fields.type.value === "film";
+      els.typeField.hidden = true;
+      els.fields.book.parentElement.hidden = true;
+      document.getElementById("newBookField").hidden = true;
+      els.bookHint.hidden = true;
+      document.getElementById("formTitle").hidden = true;
+      document.getElementById("workContext").hidden = false;
+      document.getElementById("workContextLabel").textContent = "作品库 · " + (isFilm ? "影视" : "书籍");
+      document.getElementById("workContextTitle").textContent = "《" + workName + "》";
+      document.getElementById("pageTitle").textContent = "新增" + (isFilm ? "影视" : "书籍") + "摘录";
+    } else {
+      S.toast("没有找到要添加摘录的作品");
+    }
   }
 })();

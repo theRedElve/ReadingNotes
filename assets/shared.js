@@ -169,6 +169,164 @@
     saveTrash(list);
   }
 
+  var WORK_TRASH_KEY = "shiye.works-trash.v1";
+
+  function loadWorkTrash() {
+    try {
+      var list = JSON.parse(localStorage.getItem(WORK_TRASH_KEY) || "[]");
+      if (!Array.isArray(list)) return [];
+      var cutoff = Date.now() - TRASH_DAYS * 86400000;
+      var kept = list.filter(function (entry) {
+        return entry && entry.work && new Date(entry.deletedAt).getTime() > cutoff;
+      });
+      if (kept.length !== list.length) {
+        localStorage.setItem(WORK_TRASH_KEY, JSON.stringify(kept));
+      }
+      return kept;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveWorkTrash(list) {
+    try {
+      localStorage.setItem(WORK_TRASH_KEY, JSON.stringify(list));
+    } catch (error) {
+      /* ignore */
+    }
+  }
+
+  function addWorkTrash(work) {
+    var list = loadWorkTrash();
+    list.unshift({ deletedAt: new Date().toISOString(), work: work });
+    saveWorkTrash(list);
+  }
+
+  var WORKS_KEY = "shiye.works.v1";
+
+  function fileWorks() {
+    return Array.isArray(global.WORKS) ? global.WORKS.slice() : [];
+  }
+
+  function workKey(item) {
+    var title = String((item && (item.title || item.book)) || "").trim();
+    return (item && item.type === "film" ? "film" : "book") + "::" + title;
+  }
+
+  function derivedWorkId(type, title) {
+    var text = type + "::" + title;
+    var hash = 0;
+    for (var i = 0; i < text.length; i += 1) hash = (hash * 31 + text.charCodeAt(i)) | 0;
+    return "work-" + Math.abs(hash).toString(36);
+  }
+
+  function normalizeWork(work) {
+    var type = work && work.type === "film" ? "film" : "book";
+    var title = String((work && (work.title || work.book)) || "").trim();
+    return {
+      id: String((work && work.id) || "") || derivedWorkId(type, title),
+      type: type,
+      title: title,
+      author: String((work && work.author) || "").trim(),
+      publisher: String((work && work.publisher) || "").trim(),
+      isbn: type === "book" ? String((work && work.isbn) || "").trim() : "",
+      year: String((work && work.year) || "").trim(),
+      country: String((work && work.country) || "").trim(),
+      era: type === "book" ? String((work && work.era) || "").trim() : "",
+      translator: type === "book" ? String((work && work.translator) || "").trim() : "",
+      cover: String((work && work.cover) || ""),
+      medium: type === "film" ? (work && work.medium === "剧集" ? "剧集" : "电影") : ""
+    };
+  }
+
+  function readWorksDraft() {
+    try {
+      var parsed = JSON.parse(localStorage.getItem(WORKS_KEY) || "null");
+      return Array.isArray(parsed) ? parsed : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function loadWorks() {
+    var base = readWorksDraft();
+    if (!base) base = fileWorks();
+    var list = base.map(normalizeWork).filter(function (work) { return work.title; });
+    var seen = {};
+    list.forEach(function (work) { seen[workKey(work)] = true; });
+
+    loadExcerpts().forEach(function (item) {
+      var work = normalizeWork({
+        type: item.type,
+        title: item.book,
+        author: item.author,
+        publisher: item.publisher,
+        isbn: item.isbn,
+        year: item.year,
+        country: item.country,
+        era: item.era,
+        translator: item.translator,
+        cover: item.cover,
+        medium: item.medium
+      });
+      if (!work.title || seen[workKey(work)]) return;
+      seen[workKey(work)] = true;
+      list.push(work);
+    });
+
+    return list;
+  }
+
+  function saveWorks(list) {
+    try {
+      localStorage.setItem(WORKS_KEY, JSON.stringify(list));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function clearWorksDraft() {
+    try {
+      localStorage.removeItem(WORKS_KEY);
+    } catch (error) {
+      /* ignore */
+    }
+  }
+
+  function upsertWork(work) {
+    var next = normalizeWork(work);
+    if (!next.title) return null;
+    var list = loadWorks();
+    var found = null;
+    list = list.map(function (row) {
+      if (workKey(row) !== workKey(next)) return row;
+      found = normalizeWork(row);
+      return {
+        id: row.id,
+        type: next.type,
+        title: next.title,
+        author: next.author || row.author,
+        publisher: next.publisher || row.publisher,
+        isbn: next.type === "book" ? (next.isbn || row.isbn) : "",
+        year: next.year || row.year,
+        country: next.country || row.country,
+        era: next.type === "book" ? (next.era || row.era) : "",
+        translator: next.type === "book" ? (next.translator || row.translator) : "",
+        cover: next.cover || row.cover,
+        medium: next.type === "film" ? (next.medium || row.medium) : ""
+      };
+    });
+    if (!found) {
+      list.push(next);
+      found = next;
+    } else {
+      found = list.find(function (row) { return workKey(row) === workKey(next); });
+    }
+    saveWorks(list);
+    return found;
+  }
+
   var GH = { owner: "theRedElve", repo: "ReadingNotes", branch: "main", path: "data/excerpts.js" };
   var GH_TOKEN_KEY = "shiye.gh.token.v1";
 
@@ -189,11 +347,12 @@
     }
   }
 
-  function buildScript(list) {
+  function buildScript(list, works) {
     var stamp = new Date().toLocaleString("zh-CN", { hour12: false });
-    return "/* 拾页 · 书摘数据\n * 由「全部内容」页导出于 " + stamp +
+    return "/* 拾页 · 书摘数据\n * 由管理台导出于 " + stamp +
       "\n * 用本文件覆盖站点的 data/excerpts.js 即可发布。\n */\nwindow.EXCERPTS = " +
-      JSON.stringify(list, null, 2) + ";\n";
+      JSON.stringify(list, null, 2) + ";\n\nwindow.WORKS = " +
+      JSON.stringify(works || loadWorks(), null, 2) + ";\n";
   }
 
   function toBase64(text) {
@@ -210,7 +369,7 @@
     return new Error("GitHub 返回 " + status);
   }
 
-  function publishExcerpts(list) {
+  function publishExcerpts(list, works) {
     var token = getGhToken();
     if (!token) return Promise.reject(new Error("尚未保存 GitHub 令牌"));
     var api = "https://api.github.com/repos/" + GH.owner + "/" + GH.repo + "/contents/" + GH.path;
@@ -231,7 +390,7 @@
           headers: headers,
           body: JSON.stringify({
             message: "chore: 更新摘录 " + new Date().toLocaleString("zh-CN", { hour12: false }),
-            content: toBase64(buildScript(list)),
+            content: toBase64(buildScript(list, works)),
             sha: info.sha,
             branch: GH.branch
           })
@@ -257,11 +416,19 @@
     loadTrash: loadTrash,
     saveTrash: saveTrash,
     addTrash: addTrash,
+    loadWorkTrash: loadWorkTrash,
+    saveWorkTrash: saveWorkTrash,
+    addWorkTrash: addWorkTrash,
     TRASH_DAYS: TRASH_DAYS,
     getGhToken: getGhToken,
     setGhToken: setGhToken,
     publishExcerpts: publishExcerpts,
     fileExcerpts: fileExcerpts,
+    buildScript: buildScript,
+    loadWorks: loadWorks,
+    saveWorks: saveWorks,
+    upsertWork: upsertWork,
+    clearWorksDraft: clearWorksDraft,
     saveDraft: saveDraft,
     clearDraft: clearDraft,
     readDraft: readDraft,

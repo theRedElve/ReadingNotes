@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>作品库 · 拾页</title>
+  <meta name="description" content="拾页的作品库：登记书籍与影视作品，管理它们的摘录。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c3b36'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23f3eee3' font-family='serif'%3E%E6%8B%BE%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/style.css?v=20261115r">
+</head>
+<body>
+  <header class="editor-topbar">
+    <a class="brand" href="index.html" aria-label="返回拾页书摘馆">
+      <span class="brand-seal" aria-hidden="true">拾</span>
+      <span class="brand-copy">
+        <strong>拾页</strong>
+        <small>LIBRARY</small>
+      </span>
+    </a>
+    <div class="topbar-actions">
+      <a class="button button-outline button-sm" href="admin.html">管理台</a>
+      <a class="button button-outline button-sm" href="content.html">全部内容</a>
+      <a class="button button-outline button-sm" href="publish.html">发布上线</a>
+    </div>
+  </header>
+
+  <main class="editor-main">
+    <section class="editor-intro">
+      <span class="eyebrow">LIBRARY</span>
+      <h1>作品库</h1>
+      <p>先把书或影视登记在这里，之后新增摘录时就能直接选，作者、出版社、年份会自动带入；也可以从作品卡片直接加一条摘录。作品档案会随「发布上线」一起同步。</p>
+    </section>
+
+    <section class="editor-panel works-panel" aria-labelledby="worksTitle">
+      <div class="panel-head">
+        <h2 id="worksTitle">书籍与影视</h2>
+        <span class="count" id="workCount">—</span>
+      </div>
+
+      <div class="works-toolbar">
+        <div class="works-tabs" role="tablist" aria-label="作品类型">
+          <button class="btn-mini is-active" type="button" data-filter="all" role="tab">全部</button>
+          <button class="btn-mini" type="button" data-filter="book" role="tab">书籍</button>
+          <button class="btn-mini" type="button" data-filter="film" role="tab">影视</button>
+        </div>
+        <div class="works-add">
+          <button class="btn-mini" type="button" id="addBook" aria-expanded="false" aria-controls="workForm">＋ 添加书籍</button>
+          <button class="btn-mini" type="button" id="addFilm" aria-expanded="false" aria-controls="workForm">＋ 添加影视</button>
+        </div>
+      </div>
+
+      <form class="editor-form work-form" id="workForm" hidden novalidate>
+        <div class="panel-head work-form-head">
+          <h3 id="workFormTitle">添加书籍</h3>
+          <span class="count" id="workTypeBadge">书籍</span>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span id="w-title-label">书名 *</span>
+            <input id="w-title" type="text" placeholder="例如：世说新语" required>
+          </label>
+          <label class="field" id="w-isbn-field">
+            <span>ISBN *</span>
+            <input id="w-isbn" type="text" inputmode="numeric" placeholder="例如：9787101059867">
+          </label>
+        </div>
+
+        <div class="field">
+          <span>封面 *</span>
+          <div class="cover-upload">
+            <div class="cover-upload-preview" id="w-cover-preview" hidden>
+              <img id="w-cover-img" alt="封面预览">
+            </div>
+            <div class="cover-upload-body">
+              <input id="w-cover" type="file" accept="image/*" hidden>
+              <div class="cover-upload-actions">
+                <button class="btn-mini" type="button" id="w-cover-pick">选择图片</button>
+                <button class="btn-mini is-danger" type="button" id="w-cover-clear" hidden>移除封面</button>
+              </div>
+              <p class="field-hint">支持 JPG / PNG / WebP，会自动压缩为宽 640px 的竖图，用于书摘馆与详情展示。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span id="w-author-label">作者 *</span>
+            <input id="w-author" type="text" placeholder="例如：刘义庆">
+          </label>
+          <label class="field" id="w-translator-field">
+            <span>译者</span>
+            <input id="w-translator" type="text" placeholder="例如：余嘉锡">
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span id="w-publisher-label">出版社</span>
+            <input id="w-publisher" type="text" placeholder="例如：中华书局">
+          </label>
+          <label class="field">
+            <span id="w-year-label">出版年份</span>
+            <input id="w-year" type="text" inputmode="numeric" placeholder="例如：2011">
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span>国家</span>
+            <input id="w-country" type="text" placeholder="例如：中国">
+          </label>
+          <label class="field" id="w-era-field">
+            <span>时代</span>
+            <input id="w-era" type="text" placeholder="例如：南朝">
+          </label>
+          <label class="field" id="w-medium-field" hidden>
+            <span>影视类型</span>
+            <select id="w-medium">
+              <option value="电影">电影</option>
+              <option value="剧集">剧集</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button class="button button-dark button-sm" type="submit" id="workSave">保存作品</button>
+          <button class="button button-outline button-sm" type="button" id="workCancel">取消</button>
+        </div>
+        <p class="field-hint">作品档案只登记信息，不写摘录；保存后可在卡片上点「加一条摘录」。</p>
+      </form>
+
+      <div class="work-list" id="workList"></div>
+      <p class="field-hint" id="workEmpty" hidden>还没有作品，点上面的「添加书籍」或「添加影视」开始。</p>
+    </section>
+
+    <section class="editor-panel trash-panel" id="workTrashPanel" hidden aria-labelledby="workTrashTitle">
+      <div class="panel-head">
+        <h2 id="workTrashTitle">最近删除 · 作品</h2>
+        <span class="count" id="workTrashCount">0 个</span>
+      </div>
+      <p class="field-hint">删除的作品档案保留 7 天，过期自动清理；期间可随时恢复。</p>
+      <div class="admin-list" id="workTrashList"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="dialog-mask" id="alertMask" hidden>
+    <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="alertEyebrow" aria-describedby="alertText">
+      <p class="dialog-eyebrow" id="alertEyebrow">提示</p>
+      <p class="dialog-text" id="alertText"></p>
+      <button class="button button-dark button-sm" type="button" id="alertOk">知道了</button>
+    </div>
+  </div>
+
+  <script src="data/excerpts.js?v=20261115r"></script>
+  <script src="assets/shared.js?v=20261115r"></script>
+  <script src="assets/works.js?v=20261115r"></script>
+</body>
+</html>

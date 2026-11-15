@@ -1,52 +1,8 @@
 /* 拾页 · 书摘数据
- * 由「全部内容」页导出于 2026/11/15 14:17:22
+ * 由「全部内容」页导出于 2026/11/14 23:57:22
  * 用本文件覆盖站点的 data/excerpts.js 即可发布。
  */
 window.EXCERPTS = [
-  {
-    "id": "ex-mwhfz42051",
-    "type": "book",
-    "theme": "自我",
-    "themes": [
-      "自我"
-    ],
-    "book": "道德经",
-    "chapter": "第四十六章",
-    "author": "老子",
-    "publisher": "中华书局",
-    "year": "2017",
-    "era": "春秋",
-    "country": "中国",
-    "medium": "",
-    "quote": "11",
-    "translation": "",
-    "doubanTag": "",
-    "whyThis": "",
-    "date": "2026-11-15",
-    "featured": true
-  },
-  {
-    "id": "ex-mwgnkzbx96",
-    "type": "book",
-    "theme": "自我",
-    "themes": [
-      "自我"
-    ],
-    "book": "道德经",
-    "chapter": "11",
-    "author": "老子",
-    "publisher": "中华书局",
-    "year": "2017",
-    "era": "春秋",
-    "country": "中国",
-    "medium": "",
-    "quote": "11",
-    "translation": "",
-    "doubanTag": "TOP250",
-    "whyThis": "渴望新知",
-    "date": "2026-11-15",
-    "featured": true
-  },
   {
     "id": "self-daode",
     "type": "book",
@@ -59,7 +15,7 @@ window.EXCERPTS = [
     "author": "老子",
     "publisher": "中华书局",
     "year": "2008",
-    "era": "古代",
+    "era": "",
     "country": "中国",
     "medium": "",
     "quote": "知人者智，自知者明。胜人者有力，自胜者强。",
@@ -81,7 +37,7 @@ window.EXCERPTS = [
     "author": "朱塞佩·托纳多雷",
     "publisher": "Cristaldi Film",
     "year": "1988",
-    "era": "近现代",
+    "era": "",
     "country": "意大利",
     "medium": "电影",
     "quote": "如果你不出去走走，你就会以为这就是全世界。",
@@ -90,5 +46,30 @@ window.EXCERPTS = [
     "whyThis": "",
     "date": "2026-11-05",
     "featured": false
+  }
+];
+
+window.WORKS = [
+  {
+    "id": "work-daode",
+    "type": "book",
+    "title": "道德经",
+    "author": "老子",
+    "publisher": "中华书局",
+    "year": "2008",
+    "country": "中国",
+    "era": "",
+    "medium": ""
+  },
+  {
+    "id": "work-cinema-paradiso",
+    "type": "film",
+    "title": "天堂电影院",
+    "author": "朱塞佩·托纳多雷",
+    "publisher": "Cristaldi Film",
+    "year": "1988",
+    "country": "意大利",
+    "era": "",
+    "medium": "电影"
   }
 ];
