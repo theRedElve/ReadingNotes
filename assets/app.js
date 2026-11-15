@@ -919,6 +919,10 @@
 
   window.addEventListener("hashchange", applyView);
 
+  window.addEventListener("pageshow", function (event) {
+    if (event.persisted) location.reload();
+  });
+
   /* ---------- init ---------- */
 
   document.querySelectorAll("[data-year]").forEach(function (node) {
