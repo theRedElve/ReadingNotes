@@ -119,7 +119,9 @@
         '<div class="work-card-body">' +
         '<div class="work-card-head">' +
           '<h3>' + esc(work.title) + "</h3>" +
-          '<span class="work-count-pill">' + (count ? count + " 条摘录" : "暂无摘录") + "</span>" +
+          (count
+            ? '<a class="work-count-pill" href="work.html?work=' + encodeURIComponent(work.id) + '">' + count + " 条摘录</a>"
+            : '<span class="work-count-pill">暂无摘录</span>') +
         "</div>" +
         '<p class="work-card-meta">' + esc(meta) + "</p>" +
         '<div class="work-card-foot">' +

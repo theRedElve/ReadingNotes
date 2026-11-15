@@ -260,6 +260,8 @@
     var addHref = work
       ? "admin-form.html?work=" + encodeURIComponent(work.id)
       : "works.html?type=book";
+    var anchor = "quotes-" + (work ? work.id : encodeURIComponent(group.book));
+    var detailHref = work ? "work.html?work=" + encodeURIComponent(work.id) : "index.html#library";
     return (
       '<article class="book-shelf is-' + theme.color + '">' +
         '<div class="book-aside">' +
@@ -286,12 +288,14 @@
               (group.year ? " · " + esc(group.year) : "") +
               (group.isbn ? " · ISBN " + esc(group.isbn) : "") + "</p>" +
             '<div class="book-meta">' +
-              '<span class="book-count">' + group.items.length + " 则摘录</span>" +
+              '<a class="book-count" href="' + detailHref + '">' +
+                group.items.length + " 则摘录" +
+              "</a>" +
               '<a class="book-add" href="' + addHref + '">＋ 添加书摘</a>' +
             "</div>" +
           "</div>" +
         "</div>" +
-        '<div class="book-quotes">' + quotes + "</div>" +
+        '<div class="book-quotes" id="' + esc(anchor) + '">' + quotes + "</div>" +
       "</article>"
     );
   }

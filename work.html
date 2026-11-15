@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>作品摘录 · 拾页</title>
+  <meta name="description" content="拾页的作品页：查看一部作品的全部摘录。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c3b36'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23f3eee3' font-family='serif'%3E%E6%8B%BE%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/style.css?v=20261115w">
+</head>
+<body class="wp-body">
+  <header class="editor-topbar">
+    <a class="brand" href="index.html" aria-label="返回拾页书摘馆">
+      <span class="brand-seal">拾</span>
+      <span class="brand-name">拾页<small>SHIYE</small></span>
+    </a>
+    <nav class="topbar-links">
+      <a class="button button-ghost" href="index.html#library">返回书摘馆</a>
+    </nav>
+  </header>
+
+  <main class="wp">
+    <nav class="wp-nav">
+      <a class="wp-back" href="index.html#library">← 返回书架</a>
+      <span class="wp-type" id="workEyebrow">BOOK</span>
+    </nav>
+
+    <header class="wp-head" id="workHero" hidden>
+      <div class="wp-cover" id="workCover"><span>暂无封面</span></div>
+      <div class="wp-head-body">
+        <h1 id="workTitle">作品</h1>
+        <p class="wp-meta" id="workMeta"></p>
+        <div class="wp-stats">
+          <span class="wp-stat"><strong id="workCount">0</strong><em>则摘录</em></span>
+          <span class="wp-stat"><strong id="workThemeCount">0</strong><em>个主题</em></span>
+          <span class="wp-stat"><strong id="workSpan">—</strong><em>收录跨度</em></span>
+        </div>
+      </div>
+    </header>
+
+    <section class="wp-quotes" id="workQuotes"></section>
+    <p class="wp-empty" id="workEmpty" hidden>还没有这部作品的摘录。</p>
+
+    <footer class="wp-foot">
+      <span>拾页 · 摘录存档</span>
+      <a href="index.html#library">继续逛书架 →</a>
+    </footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="data/excerpts.js?v=20261115w"></script>
+  <script src="assets/shared.js?v=20261115w"></script>
+  <script src="assets/work.js?v=20261115w"></script>
+</body>
+</html>
