@@ -6,7 +6,7 @@
   <title>拾页 · 书摘馆</title>
   <meta name="description" content="拾页是一间线上的书摘馆：按书陈列书摘，按主题重读句子，也收藏银幕上的台词。">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c3b36'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23f3eee3' font-family='serif'%3E%E6%8B%BE%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="assets/style.css?v=20261115y">
+  <link rel="stylesheet" href="assets/style.css?v=20261115z8">
 </head>
 <body>
   <a class="skip-link" href="#library">跳到书摘馆</a>
@@ -69,80 +69,7 @@
           <p class="intro-desc">以书为单位陈列。每一栏是一本书，书里被折角的那几页，连同版本信息，都收在这里。</p>
         </header>
 
-        <section class="today-spread" id="today" aria-labelledby="today-title">
-          <div class="spread-heading">
-            <div>
-              <span class="eyebrow">PAGE OF THE DAY</span>
-              <h2 id="today-title">今日一页</h2>
-            </div>
-            <button class="text-button" type="button" data-today-change>换一页 ↻</button>
-          </div>
-
-          <article class="today-card is-time" data-today-card>
-            <div class="today-body">
-              <span class="today-theme" data-today-theme>时间 · TIME</span>
-              <blockquote class="today-quote" data-today-quote>人生如逆旅，我亦是行人。</blockquote>
-              <p class="today-source" data-today-source>苏轼《苏轼词集》</p>
-              <p class="today-note" data-today-note>把人生看作一家旅店，把自己看作过客，许多执念会松一点。不是不在乎，而是知道聚散本来如此。</p>
-              <div class="today-actions">
-                <button class="button button-outline button-sm" type="button" data-today-open>展开读 →</button>
-                <button class="button button-dark button-sm" type="button" data-today-fav>收藏此页</button>
-              </div>
-            </div>
-            <div class="today-plate" aria-hidden="true">
-              <span class="plate-bgchar" data-today-char>时</span>
-              <span class="plate-no" data-today-no>NO. 12</span>
-              <span class="plate-title" data-today-title>苏轼词集</span>
-              <span class="plate-seal">拾</span>
-              <span class="plate-meta">SHIYE · 今日一页</span>
-            </div>
-          </article>
-        </section>
-
-        <section class="library" id="bookshelf" aria-labelledby="bookshelf-heading">
-          <div class="library-heading">
-            <div>
-              <span class="eyebrow">THE BOOKS</span>
-              <h2 id="bookshelf-heading">按书翻阅</h2>
-            </div>
-            <p>共 <strong data-book-count>20</strong> 本书，<strong data-book-total>24</strong> 则摘录。每本书标注了作者、出版社与年份。</p>
-          </div>
-
-          <form class="library-tools" data-book-filter role="search">
-            <div class="search-field">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
-              <input type="search" placeholder="搜索书名、作者或句子……" aria-label="搜索书摘" autocomplete="off" data-book-search>
-              <kbd>/</kbd>
-            </div>
-            <div class="filter-grid filter-grid-3">
-              <label>
-                <span>作者</span>
-                <select data-book-author><option value="all">全部作者</option></select>
-              </label>
-              <label>
-                <span>时代</span>
-                <select data-book-era>
-                  <option value="all">不限时代</option>
-                  <option value="古代">古代</option>
-                  <option value="近现代">近现代</option>
-                </select>
-              </label>
-              <label>
-                <span>排序</span>
-                <select data-book-sort>
-                  <option value="newest">最近收录</option>
-                  <option value="title">按书名</option>
-                  <option value="count">按摘录数量</option>
-                  <option value="author">按作者</option>
-                </select>
-              </label>
-            </div>
-          </form>
-
-          <div class="results-toolbar">
-            <p>共 <strong data-book-result>20</strong> 本书<button class="clear-filters" type="button" data-book-clear hidden>清除筛选</button></p>
-          </div>
-
+        <section class="library" id="bookshelf">
           <div class="book-list" data-book-list></div>
 
           <div class="load-more-wrap">
@@ -151,9 +78,8 @@
 
           <div class="empty-state" data-book-empty hidden>
             <span aria-hidden="true">空</span>
-            <h2>书架上暂时没有这本书</h2>
-            <p>换一个关键词，或者清除筛选再看看。</p>
-            <button class="button button-outline" type="button" data-book-clear>清除全部筛选</button>
+            <h2>书架暂时是空的</h2>
+            <p>还没有收录书摘，去管理台添加一条试试。</p>
           </div>
         </section>
       </section>
@@ -319,28 +245,35 @@
           <p class="intro-desc">「拾页」是一间很小的线上书摘馆。所有摘录按书归架，也可以按主题重读；银幕上的句子，另有一间影视馆。</p>
         </header>
 
-        <div class="about-body">
-          <p class="about-lead">书摘不是收藏，是反复回到的地方。</p>
-          <p>这个站点不追求读得多，只希望每一句被留下的句子，都还有被重新读到的机会。书摘馆以书为单位陈列，每本书标注作者、出版社与年份；主题馆则把这些句子重新按主题编排，让不同书、不同年代、甚至不同媒介的表达彼此照面。</p>
-          <p>影视馆收电影与剧集里的台词。它们和书摘一样，都是某个瞬间停住我们的表达，只是媒介不同。</p>
-          <div class="colophon-grid">
+        <section class="today-spread" id="today" aria-labelledby="today-title">
+          <div class="spread-heading">
             <div>
-              <span>01</span>
-              <strong>按书陈列</strong>
-              <p>每本书是一个栏目，保留版本信息与原书篇目。</p>
+              <span class="eyebrow">PAGE OF THE DAY</span>
+              <h2 id="today-title">今日一页</h2>
             </div>
-            <div>
-              <span>02</span>
-              <strong>按主题重读</strong>
-              <p>主题馆把书籍与影视放在同一主题下重新排列。</p>
-            </div>
-            <div>
-              <span>03</span>
-              <strong>持续更新</strong>
-              <p>后台新增、修改后导出数据文件，即可发布新内容。</p>
-            </div>
+            <button class="text-button" type="button" data-today-change>换一页 ↻</button>
           </div>
-        </div>
+
+          <article class="today-card is-time" data-today-card>
+            <div class="today-body">
+              <span class="today-theme" data-today-theme>时间 · TIME</span>
+              <blockquote class="today-quote" data-today-quote>人生如逆旅，我亦是行人。</blockquote>
+              <p class="today-source" data-today-source>苏轼《苏轼词集》</p>
+              <p class="today-note" data-today-note>把人生看作一家旅店，把自己看作过客，许多执念会松一点。不是不在乎，而是知道聚散本来如此。</p>
+              <div class="today-actions">
+                <button class="button button-outline button-sm" type="button" data-today-open>展开读 →</button>
+                <button class="button button-dark button-sm" type="button" data-today-fav>收藏此页</button>
+              </div>
+            </div>
+            <div class="today-plate" aria-hidden="true">
+              <span class="plate-bgchar" data-today-char>时</span>
+              <span class="plate-no" data-today-no>NO. 12</span>
+              <span class="plate-title" data-today-title>苏轼词集</span>
+              <span class="plate-seal">拾</span>
+              <span class="plate-meta">SHIYE · 今日一页</span>
+            </div>
+          </article>
+        </section>
 
         <section class="about-strip">
           <div class="about-copy">
@@ -409,6 +342,6 @@
 
   <script src="data/excerpts.js?v=20261115s"></script>
   <script src="assets/shared.js?v=20261115s"></script>
-  <script src="assets/app.js?v=20261115y"></script>
+  <script src="assets/app.js?v=20261115z"></script>
 </body>
 </html>

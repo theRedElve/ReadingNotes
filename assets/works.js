@@ -36,7 +36,12 @@
     cancel: document.getElementById("workCancel"),
     addBook: document.getElementById("addBook"),
     addFilm: document.getElementById("addFilm"),
-    tabs: Array.prototype.slice.call(document.querySelectorAll("[data-filter]")),
+    search: document.querySelector("[data-work-search]"),
+    typeFilter: document.querySelector("[data-work-type]"),
+    authorFilter: document.querySelector("[data-work-author]"),
+    sortSelect: document.querySelector("[data-work-sort]"),
+    result: document.getElementById("workResult"),
+    clear: document.getElementById("workClear"),
     trashPanel: document.getElementById("workTrashPanel"),
     trashCount: document.getElementById("workTrashCount"),
     trashList: document.getElementById("workTrashList")
@@ -47,6 +52,9 @@
   var works = S.loadWorks();
   var excerpts = S.loadExcerpts();
   var filter = paramType === "book" || paramType === "film" ? paramType : "all";
+  var query = "";
+  var authorFilter = "all";
+  var sort = "newest";
   var editingId = null;
   var formType = "book";
   var coverData = "";
@@ -87,10 +95,23 @@
     }).length;
   }
 
-  function setActiveTab() {
-    els.tabs.forEach(function (btn) {
-      btn.classList.toggle("is-active", btn.getAttribute("data-filter") === filter);
+  function fillAuthors() {
+    var names = [];
+    works.forEach(function (work) {
+      var name = String(work.author || "").trim();
+      if (name && names.indexOf(name) === -1) names.push(name);
     });
+    names.sort(function (a, b) { return a.localeCompare(b, "zh-Hans-CN"); });
+    if (authorFilter !== "all" && names.indexOf(authorFilter) === -1) authorFilter = "all";
+    els.authorFilter.innerHTML = '<option value="all">全部作者</option>' + names.map(function (name) {
+      return '<option value="' + esc(name) + '">' + esc(name) + "</option>";
+    }).join("");
+    els.authorFilter.value = authorFilter;
+  }
+
+  function syncControls() {
+    els.typeFilter.value = filter;
+    els.sortSelect.value = sort;
   }
 
   function render() {
@@ -98,9 +119,31 @@
     var films = works.filter(function (work) { return work.type === "film"; }).length;
     els.count.textContent = works.length + " 个档案 · " + books + " 本书 · " + films + " 部影视";
 
+    fillAuthors();
+    syncControls();
+
+    var keyword = query.trim().toLowerCase();
     var shown = works.filter(function (work) {
-      return filter === "all" || work.type === filter;
+      if (filter !== "all" && work.type !== filter) return false;
+      if (authorFilter !== "all" && String(work.author || "").trim() !== authorFilter) return false;
+      if (!keyword) return true;
+      return [work.title, work.author, work.translator, work.publisher, work.isbn].some(function (value) {
+        return String(value || "").toLowerCase().indexOf(keyword) > -1;
+      });
     });
+
+    if (sort === "title") {
+      shown.sort(function (a, b) { return a.title.localeCompare(b.title, "zh-Hans-CN"); });
+    } else if (sort === "author") {
+      shown.sort(function (a, b) { return String(a.author || "").localeCompare(String(b.author || ""), "zh-Hans-CN"); });
+    } else if (sort === "count") {
+      shown.sort(function (a, b) { return countOf(b) - countOf(a); });
+    } else {
+      shown.reverse();
+    }
+
+    els.result.textContent = shown.length;
+    els.clear.hidden = !(keyword || filter !== "all" || authorFilter !== "all" || sort !== "newest");
 
     els.list.innerHTML = shown.map(function (work) {
       var meta = [
@@ -134,10 +177,9 @@
     }).join("");
 
     els.empty.hidden = shown.length > 0;
-    els.empty.textContent = filter === "film"
-      ? "还没有影视作品，点上面的「添加影视」开始。"
-      : (filter === "book" ? "还没有书籍，点上面的「添加书籍」开始。" : "还没有作品，点上面的「添加书籍」或「添加影视」开始。");
-    setActiveTab();
+    els.empty.textContent = keyword || authorFilter !== "all" || filter !== "all"
+      ? "没有符合条件的作品，换个关键词或清除筛选再看看。"
+      : "还没有作品，点上面的「添加书籍」或「添加影视」开始。";
   }
 
   function applyFormCopy() {
@@ -260,11 +302,41 @@
     }).join("");
   }
 
-  els.tabs.forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      filter = btn.getAttribute("data-filter");
-      render();
-    });
+  els.search.addEventListener("input", function () {
+    query = els.search.value;
+    render();
+  });
+
+  els.typeFilter.addEventListener("change", function () {
+    filter = els.typeFilter.value;
+    render();
+  });
+
+  els.authorFilter.addEventListener("change", function () {
+    authorFilter = els.authorFilter.value;
+    render();
+  });
+
+  els.sortSelect.addEventListener("change", function () {
+    sort = els.sortSelect.value;
+    render();
+  });
+
+  els.clear.addEventListener("click", function () {
+    query = "";
+    filter = "all";
+    authorFilter = "all";
+    sort = "newest";
+    els.search.value = "";
+    render();
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) return;
+    var tag = (event.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return;
+    event.preventDefault();
+    els.search.focus();
   });
 
   els.addBook.addEventListener("click", function () {

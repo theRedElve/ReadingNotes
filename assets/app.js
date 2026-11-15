@@ -29,7 +29,6 @@
   var books = all.filter(function (item) { return typeOf(item) === "book"; });
   var films = all.filter(function (item) { return typeOf(item) === "film"; });
 
-  var bookState = { q: "", author: "all", era: "all", sort: "newest" };
   var filmState = { q: "", medium: "all", director: "all", region: "all", sort: "newest" };
   var themeState = { q: "", theme: "all", type: "all", author: "all", fav: "all", sort: "newest" };
   var bookLimit = 8;
@@ -38,17 +37,9 @@
     views: Array.prototype.slice.call(document.querySelectorAll("[data-view]")),
     navLinks: Array.prototype.slice.call(document.querySelectorAll("[data-nav]")),
     book: {
-      search: document.querySelector("[data-book-search]"),
-      author: document.querySelector("[data-book-author]"),
-      era: document.querySelector("[data-book-era]"),
-      sort: document.querySelector("[data-book-sort]"),
       list: document.querySelector("[data-book-list]"),
       more: document.querySelector("[data-book-more]"),
-      empty: document.querySelector("[data-book-empty]"),
-      count: document.querySelector("[data-book-result]"),
-      total: document.querySelector("[data-book-count]"),
-      totalLines: document.querySelector("[data-book-total]"),
-      clears: Array.prototype.slice.call(document.querySelectorAll("[data-book-clear]"))
+      empty: document.querySelector("[data-book-empty]")
     },
     film: {
       search: document.querySelector("[data-film-search]"),
@@ -199,16 +190,7 @@
   /* ---------- book view ---------- */
 
   function bookGroups() {
-    var q = bookState.q.trim().toLowerCase();
-    var items = books.filter(function (item) {
-      if (bookState.author !== "all" && item.author !== bookState.author) return false;
-      if (bookState.era !== "all" && item.era !== bookState.era) return false;
-      if (!q) return true;
-      return [item.book, item.chapter, item.author, item.quote, item.translation, item.publisher, item.year, item.country, themesOf(item).join(" ")]
-        .join(" ")
-        .toLowerCase()
-        .indexOf(q) !== -1;
-    });
+    var items = books.slice();
 
     var map = new Map();
     items.forEach(function (item) {
@@ -237,9 +219,6 @@
     });
 
     groups.sort(function (a, b) {
-      if (bookState.sort === "title") return String(a.book).localeCompare(String(b.book), "zh-Hans-CN");
-      if (bookState.sort === "count") return b.items.length - a.items.length || String(a.book).localeCompare(String(b.book), "zh-Hans-CN");
-      if (bookState.sort === "author") return String(a.author).localeCompare(String(b.author), "zh-Hans-CN");
       return String(b.latest || "").localeCompare(String(a.latest || ""));
     });
 
@@ -320,36 +299,8 @@
 
     els.book.list.innerHTML = visible.map(bookShelfHTML).join("");
     els.book.empty.hidden = groups.length !== 0;
-    els.book.count.textContent = groups.length;
     els.book.more.hidden = groups.length <= bookLimit;
     els.book.more.textContent = "展开更多书目（还有 " + Math.max(groups.length - bookLimit, 0) + " 本）";
-
-    var filtering = Boolean(bookState.q.trim()) || bookState.author !== "all" || bookState.era !== "all";
-    els.book.clears.forEach(function (button) { button.hidden = !filtering; });
-  }
-
-  function renderBookAuthors() {
-    setOptions(els.book.author, uniqueAuthors(books), "全部作者", bookState.author);
-  }
-
-  function renderBookEras() {
-    var values = Array.from(new Set(books.map(function (item) { return item.era; })))
-      .filter(Boolean)
-      .sort(function (a, b) { return a.localeCompare(b, "zh-Hans-CN"); });
-    setOptions(els.book.era, values, "不限时代", bookState.era);
-  }
-
-  function resetBookFilters() {
-    bookState.q = "";
-    bookState.author = "all";
-    bookState.era = "all";
-    bookState.sort = "newest";
-    bookLimit = 8;
-    els.book.search.value = "";
-    els.book.era.value = "all";
-    els.book.sort.value = "newest";
-    els.book.author.value = "all";
-    renderBooks();
   }
 
   /* ---------- film view ---------- */
@@ -600,8 +551,6 @@
     setAll("[data-stat-lines]", films.length);
     setAll("[data-stat-all]", all.length);
     setAll("[data-stat-theme-count]", themeCount);
-    setAll("[data-book-count]", uniqueBookNames);
-    setAll("[data-book-total]", books.length);
   }
 
   function setAll(selector, value) {
@@ -781,31 +730,6 @@
     timers[name] = setTimeout(fn, wait);
   }
 
-  els.book.search.addEventListener("input", function () {
-    debounce("book", function () {
-      bookState.q = els.book.search.value;
-      bookLimit = 8;
-      renderBooks();
-    }, 120);
-  });
-  els.book.author.addEventListener("change", function () {
-    bookState.author = els.book.author.value;
-    bookLimit = 8;
-    renderBooks();
-  });
-  els.book.era.addEventListener("change", function () {
-    bookState.era = els.book.era.value;
-    bookLimit = 8;
-    renderBooks();
-  });
-  els.book.sort.addEventListener("change", function () {
-    bookState.sort = els.book.sort.value;
-    bookLimit = 8;
-    renderBooks();
-  });
-  els.book.clears.forEach(function (button) {
-    button.addEventListener("click", resetBookFilters);
-  });
   els.book.more.addEventListener("click", function () {
     bookLimit += 8;
     renderBooks();
@@ -930,8 +854,6 @@
   });
 
   renderStats();
-  renderBookAuthors();
-  renderBookEras();
   renderFilmOptions();
   renderThemeOptions();
   renderBooks();

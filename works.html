@@ -6,7 +6,7 @@
   <title>作品库 · 拾页</title>
   <meta name="description" content="拾页的作品库：登记书籍与影视作品，管理它们的摘录。">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c3b36'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23f3eee3' font-family='serif'%3E%E6%8B%BE%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="assets/style.css?v=20261115v">
+  <link rel="stylesheet" href="assets/style.css?v=20261115z8">
 </head>
 <body>
   <header class="editor-topbar">
@@ -32,17 +32,47 @@
     </section>
 
     <section class="editor-panel works-panel" aria-labelledby="worksTitle">
-      <div class="panel-head">
-        <h2 id="worksTitle">书籍与影视</h2>
-        <span class="count" id="workCount">—</span>
+      <div class="library-heading works-heading">
+        <div>
+          <span class="eyebrow">THE WORKS</span>
+          <h2 id="worksTitle">书籍与影视</h2>
+        </div>
+        <p id="workCount">—</p>
       </div>
 
-      <div class="works-toolbar">
-        <div class="works-tabs" role="tablist" aria-label="作品类型">
-          <button class="btn-mini is-active" type="button" data-filter="all" role="tab">全部</button>
-          <button class="btn-mini" type="button" data-filter="book" role="tab">书籍</button>
-          <button class="btn-mini" type="button" data-filter="film" role="tab">影视</button>
+      <form class="library-tools works-tools" role="search">
+        <div class="search-field">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+          <input type="search" placeholder="搜索书名、作者或 ISBN……" aria-label="搜索作品" autocomplete="off" data-work-search>
+          <kbd>/</kbd>
         </div>
+        <div class="filter-grid filter-grid-3">
+          <label>
+            <span>类型</span>
+            <select data-work-type>
+              <option value="all">全部作品</option>
+              <option value="book">书籍</option>
+              <option value="film">影视</option>
+            </select>
+          </label>
+          <label>
+            <span>作者 / 导演</span>
+            <select data-work-author><option value="all">全部作者</option></select>
+          </label>
+          <label>
+            <span>排序</span>
+            <select data-work-sort>
+              <option value="newest">最近录入</option>
+              <option value="title">按书名</option>
+              <option value="count">按摘录数量</option>
+              <option value="author">按作者</option>
+            </select>
+          </label>
+        </div>
+      </form>
+
+      <div class="results-toolbar works-result-bar">
+        <p>共 <strong id="workResult">0</strong> 个档案<button class="clear-filters" type="button" id="workClear" hidden>清除筛选</button></p>
         <div class="works-add">
           <button class="btn-mini" type="button" id="addBook" aria-expanded="false" aria-controls="workForm">＋ 添加书籍</button>
           <button class="btn-mini" type="button" id="addFilm" aria-expanded="false" aria-controls="workForm">＋ 添加影视</button>
@@ -156,6 +186,6 @@
 
   <script src="data/excerpts.js?v=20261115r"></script>
   <script src="assets/shared.js?v=20261115r"></script>
-  <script src="assets/works.js?v=20261115v"></script>
+  <script src="assets/works.js?v=20261115w"></script>
 </body>
 </html>
