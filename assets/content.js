@@ -16,12 +16,6 @@
     trashPanel: document.getElementById("trashPanel"),
     trashCount: document.getElementById("trashCount"),
     trashList: document.getElementById("trashList"),
-    ghToken: document.getElementById("ghToken"),
-    saveToken: document.getElementById("saveToken"),
-    clearToken: document.getElementById("clearToken"),
-    publishNow: document.getElementById("publishNow"),
-    publishState: document.getElementById("publishState"),
-    publishNote: document.getElementById("publishNote"),
     exportJs: document.getElementById("exportJs"),
     exportJson: document.getElementById("exportJson"),
     importFile: document.getElementById("importFile"),
@@ -101,31 +95,6 @@
     renderMonthOptions();
     renderList();
     if (message) S.toast(message);
-    if (S.getGhToken()) {
-      els.publishState.textContent = "有改动待发布";
-      els.publishNote.textContent = "改动已在本页生效，确认页面效果无误后点「立即发布」提交上线。";
-    }
-  }
-
-  function renderPublishState() {
-    var connected = Boolean(S.getGhToken());
-    els.publishState.textContent = connected ? "已连接 GitHub" : "未连接";
-    els.ghToken.placeholder = connected ? "令牌已保存，输入新令牌可替换" : "github_pat_…";
-  }
-
-  function publish(showToast) {
-    els.publishState.textContent = "正在提交…";
-    els.publishNote.textContent = "正在把当前内容提交到 GitHub…";
-    return S.publishExcerpts(data).then(function () {
-      els.publishState.textContent = "已提交 · 约 1 分钟生效";
-      els.publishNote.textContent = "已提交到 main 分支，GitHub Pages 通常 1 分钟内更新。";
-      if (showToast) S.toast("已提交上线");
-    }).catch(function (error) {
-      els.publishState.textContent = "提交失败";
-      els.publishNote.textContent = error.message;
-      if (showToast) S.toast(error.message);
-      throw error;
-    });
   }
 
   /* ---------- render ---------- */
@@ -190,7 +159,7 @@
               (edition ? " · " + esc(edition) : "") + "</small>" +
           "</div>" +
           '<div class="admin-row-actions">' +
-            '<a href="admin.html?edit=' + encodeURIComponent(item.id) + '">编辑</a>' +
+            '<a href="admin-form.html?edit=' + encodeURIComponent(item.id) + '">编辑</a>' +
             '<button class="is-danger" type="button" data-action="delete" data-id="' + esc(item.id) + '">删除</button>' +
           "</div>" +
         "</div>"
@@ -376,40 +345,10 @@
     }
   });
 
-  els.saveToken.addEventListener("click", function () {
-    var token = els.ghToken.value.trim();
-    if (!token) {
-      S.toast("请先粘贴 GitHub 令牌");
-      els.ghToken.focus();
-      return;
-    }
-    S.setGhToken(token);
-    els.ghToken.value = "";
-    renderPublishState();
-    S.toast("令牌已保存，之后的改动会自动上线");
-  });
-
-  els.clearToken.addEventListener("click", function () {
-    S.setGhToken("");
-    els.ghToken.value = "";
-    renderPublishState();
-    S.toast("已清除令牌，改动只保存在本地草稿");
-  });
-
-  els.publishNow.addEventListener("click", function () {
-    if (!S.getGhToken()) {
-      S.toast("请先保存 GitHub 令牌");
-      els.ghToken.focus();
-      return;
-    }
-    publish(true).catch(function () {});
-  });
-
   /* ---------- init ---------- */
 
   setSaveState();
   renderMonthOptions();
   renderList();
   renderTrash();
-  renderPublishState();
 })();

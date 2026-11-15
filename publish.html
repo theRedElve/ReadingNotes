@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>发布上线 · 拾页</title>
+  <meta name="description" content="拾页的发布入口：保存 GitHub 令牌，确认页面效果后一键把本地草稿提交到 main 分支。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c3b36'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23f3eee3' font-family='serif'%3E%E6%8B%BE%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="editor-topbar">
+    <a class="brand" href="index.html" aria-label="返回拾页书摘馆">
+      <span class="brand-seal" aria-hidden="true">拾</span>
+      <span class="brand-copy">
+        <strong>拾页</strong>
+        <small>PUBLISH</small>
+      </span>
+    </a>
+    <div class="topbar-actions">
+      <a class="button button-outline button-sm" href="admin.html">管理台</a>
+      <a class="button button-outline button-sm" href="content.html">全部内容</a>
+      <a class="button button-outline button-sm" href="index.html">返回站点 →</a>
+    </div>
+  </header>
+
+  <main class="editor-main">
+    <section class="editor-intro">
+      <span class="eyebrow">PUBLISH</span>
+      <h1>发布上线</h1>
+    </section>
+
+    <section class="intro-steps" aria-label="上线流程">
+      <div class="intro-step">
+        <span class="step-no">01</span>
+        <p>在管理台增删改摘录，内容会即时写入本地草稿，同一浏览器的书摘馆、影视馆与主题馆立即生效。</p>
+      </div>
+      <div class="intro-step">
+        <span class="step-no">02</span>
+        <p>首次使用：在本页保存一个 Fine-grained GitHub 令牌（仅需本仓库 Contents 读写权限）。</p>
+      </div>
+      <div class="intro-step">
+        <span class="step-no">03</span>
+        <p>之后每次保存、删除或恢复都会先在本地网页上生效；确认页面效果无误后，在本页点「立即发布」，才会提交到 main 分支，GitHub Pages 约 1 分钟后对所有访客生效。备用方式仍是导出 <code>excerpts.js</code> 后手动上传。</p>
+      </div>
+    </section>
+
+    <section class="editor-panel publish-panel" aria-labelledby="publishTitle">
+      <div class="panel-head">
+        <h2 id="publishTitle">发布上线</h2>
+        <span class="count" id="publishState">未连接</span>
+      </div>
+      <p class="field-hint" id="publishSummary">正在读取本地内容…</p>
+
+      <ol class="publish-steps">
+        <li>
+          <span class="step-no">第 1 步</span>
+          <div class="publish-step-body">
+            <strong>连接 GitHub</strong>
+            <p class="field-hint">粘贴你的 Fine-grained 令牌，点「保存令牌」。令牌只保存在当前浏览器，可随时清除。</p>
+            <div class="publish-row">
+              <input id="ghToken" name="gh-token-value" class="token-input" type="text" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore aria-label="GitHub 令牌">
+              <button class="btn-mini" id="saveToken" type="button">保存令牌</button>
+              <button class="btn-mini" id="clearToken" type="button">清除令牌</button>
+            </div>
+
+            <details class="token-guide">
+              <summary>第一次用？展开看怎么创建令牌</summary>
+              <ol>
+                <li>登录 GitHub，点右上角头像 → <b>Settings</b></li>
+                <li>左侧最下方 → <b>Developer settings</b> → <b>Personal access tokens</b> → <b>Fine-grained tokens</b></li>
+                <li>点 <b>Generate new token</b>，Name 随便填（例如 ReadingNotes），Expiration 自选</li>
+                <li><b>Repository access</b> 选 <b>Only select repositories</b>，只勾选 <b>ReadingNotes</b></li>
+                <li><b>Permissions</b> → <b>Repository permissions</b> → <b>Contents</b> 设为 <b>Read and write</b></li>
+                <li>点 <b>Generate token</b>，复制以 <code>github_pat_</code> 开头的令牌（只显示这一次）</li>
+                <li>回到本页粘贴并点「保存令牌」，右上角变成「已连接 GitHub」即成功</li>
+              </ol>
+              <p class="field-hint">令牌到期后重新生成一个替换即可；换设备或清理浏览器数据后需要重新保存。</p>
+            </details>
+          </div>
+        </li>
+
+        <li>
+          <span class="step-no">第 2 步</span>
+          <div class="publish-step-body">
+            <strong>提交上线</strong>
+            <p class="field-hint" id="publishNote">确认页面效果无误后，点下面的按钮提交。</p>
+            <button class="button button-dark button-sm" id="publishNow" type="button">立即发布</button>
+          </div>
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="data/excerpts.js"></script>
+  <script src="assets/shared.js"></script>
+  <script src="assets/publish.js"></script>
+</body>
+</html>

@@ -124,7 +124,7 @@
     }
     hasDraft = true;
     setSaveState();
-    if (message) S.toast(message + "（确认页面无误后到「全部内容」点「立即发布」）");
+    if (message) S.toast(message + "（确认页面无误后到「发布上线」页点「立即发布」）");
     return true;
   }
 
@@ -486,6 +486,7 @@
     S.addTrash(item);
     data = data.filter(function (row) { return row.id !== editingId; });
     persist("已删除，可在「全部内容 → 最近删除」恢复");
+    renderWorkOptions(els.fields.type.value === "film" ? "film" : "book");
     renderTagOptions();
     resetForm(false);
   });

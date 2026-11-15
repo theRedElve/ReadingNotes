@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>更新书摘 · 拾页</title>
-  <meta name="description" content="拾页书摘馆的更新入口：新增、修改、删除摘录，并导出为静态站点数据文件。">
+  <title>管理台 · 拾页</title>
+  <meta name="description" content="拾页的管理台：进入内容管理、新增内容与发布上线。">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231c3b36'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23f3eee3' font-family='serif'%3E%E6%8B%BE%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -18,161 +18,44 @@
       </span>
     </a>
     <div class="topbar-actions">
-      <span class="save-state" id="saveState">已载入文件数据</span>
-      <a class="button button-outline button-sm" href="content.html">全部内容</a>
-      <a class="button button-outline button-sm" href="index.html">查看书摘馆 →</a>
+      <a class="button button-outline button-sm" href="publish.html">发布上线</a>
+      <a class="button button-outline button-sm" href="index.html">返回站点 →</a>
     </div>
   </header>
 
   <main class="editor-main">
     <section class="editor-intro">
       <span class="eyebrow">EDITOR'S DESK</span>
-      <h1>更新内容</h1>
+      <h1>管理台</h1>
+      <p>在这里整理拾页的内容。所有改动先写入本地草稿，同一浏览器里立刻可见；确认效果无误后，再到「发布上线」提交给所有访客。</p>
     </section>
 
-    <section class="update-guide" aria-labelledby="guideTitle">
-      <h2 id="guideTitle">怎么让更新真正上线</h2>
-      <ol>
-        <li>在这里增删改摘录，内容会即时写入本地草稿，同一浏览器的书摘馆、影视馆与主题馆立即生效。</li>
-        <li>首次使用：打开「全部内容」页底部的「发布上线」，保存一个 Fine-grained GitHub 令牌（仅需本仓库 Contents 读写权限）。</li>
-        <li>之后每次保存、删除或恢复都会先在本地网页上生效；确认页面效果无误后，到「全部内容」页点「立即发布」，才会提交到 main 分支，GitHub Pages 约 1 分钟后对所有访客生效。备用方式仍是导出 <code>excerpts.js</code> 后手动上传。</li>
-      </ol>
+    <section class="hub-grid" aria-label="管理入口">
+      <a class="hub-card" href="content.html">
+        <span class="hub-index">01</span>
+        <h2>管理内容</h2>
+        <p>搜索、编辑、删除已有的书摘与台词。删除的内容会进 7 天回收站，随时可以恢复。</p>
+        <span class="hub-go">进入全部内容 →</span>
+      </a>
+
+      <a class="hub-card" href="admin-form.html">
+        <span class="hub-index">02</span>
+        <h2>新增内容</h2>
+        <p>添加新的书摘或影视台词，同一本书可以收录多条；主题、豆瓣标签与 Why this? 都能随手新增。</p>
+        <span class="hub-go">开始填写 →</span>
+      </a>
+
+      <a class="hub-card" href="publish.html">
+        <span class="hub-index">03</span>
+        <h2>发布上线</h2>
+        <p>确认页面效果后，一键把本地草稿提交到 main 分支，约 1 分钟后对所有访客生效。</p>
+        <span class="hub-go">去发布 →</span>
+      </a>
     </section>
 
-    <section class="editor-panel form-panel" aria-labelledby="formTitle">
-        <div class="panel-head">
-          <h2 id="formTitle">新增一则书摘 / 台词</h2>
-          <span class="edit-badge" id="editBadge" hidden>正在编辑</span>
-        </div>
-
-        <form class="editor-form" id="excerptForm" novalidate>
-          <div class="field-row">
-            <label class="field">
-              <span>类型 *</span>
-              <select id="f-type">
-                <option value="book">书籍 · 书摘</option>
-                <option value="film">影视 · 台词</option>
-              </select>
-            </label>
-          </div>
-
-          <fieldset class="field theme-field">
-            <span>主题（可多选）*</span>
-            <div class="theme-picker" id="f-themes"></div>
-          </fieldset>
-
-          <label class="field">
-            <span id="f-label-book">书名 *</span>
-            <select id="f-book" required></select>
-          </label>
-
-          <p class="field-hint" id="bookHint">已有书目可直接选择，会自动带入作者、出版社与年份；列表里没有时选择「＋ 新增书籍…」。</p>
-
-          <label class="field" id="newBookField" hidden>
-            <span id="f-label-new-book">新书名 *</span>
-            <input id="f-new-book" type="text" placeholder="输入新的书名">
-          </label>
-
-          <div class="field-row">
-            <label class="field">
-              <span id="f-label-author">作者 *</span>
-              <input id="f-author" type="text" placeholder="例如：刘义庆" required>
-            </label>
-            <label class="field">
-              <span id="f-label-publisher">出版社</span>
-              <input id="f-publisher" type="text" placeholder="例如：中华书局">
-            </label>
-          </div>
-
-          <div class="field-row">
-            <label class="field">
-              <span id="f-label-year">出版年份</span>
-              <input id="f-year" type="text" inputmode="numeric" placeholder="例如：2011">
-            </label>
-            <label class="field">
-              <span id="f-label-place">国家</span>
-              <input id="f-country" type="text" placeholder="例如：中国">
-            </label>
-          </div>
-
-          <div class="field-row">
-            <label class="field">
-              <span id="f-label-chapter">篇目 / 章节</span>
-              <input id="f-chapter" type="text" placeholder="例如：品藻">
-            </label>
-            <label class="field" data-for="book">
-              <span>时代</span>
-              <select id="f-era">
-                <option value="">未选择</option>
-                <option value="__new__">＋ 新增时代…</option>
-              </select>
-              <input id="f-era-new" type="text" placeholder="输入新的时代" hidden>
-            </label>
-            <label class="field" data-for="film" hidden>
-              <span>影视类型</span>
-              <select id="f-medium">
-                <option value="电影">电影</option>
-                <option value="剧集">剧集</option>
-              </select>
-            </label>
-          </div>
-
-          <label class="field">
-            <span id="f-label-quote">原文摘录 *</span>
-            <textarea id="f-quote" rows="4" placeholder="贴入你想留下的句子……" required></textarea>
-          </label>
-
-          <label class="field">
-            <span>译文（可选）</span>
-            <textarea id="f-translation" rows="4" placeholder="如有译文可填在这里，留空则不显示。"></textarea>
-          </label>
-
-          <div class="field-row">
-            <label class="field">
-              <span>豆瓣标签</span>
-              <select id="f-douban"><option value="">未选择</option></select>
-            </label>
-            <label class="field">
-              <span>Why this?</span>
-              <select id="f-why"><option value="">未选择</option></select>
-            </label>
-          </div>
-
-          <label class="field" id="newDoubanField" hidden>
-            <span>新的豆瓣标签</span>
-            <input id="f-douban-new" type="text" placeholder="输入后保存，下次可直接选">
-          </label>
-
-          <label class="field" id="newWhyField" hidden>
-            <span>新的 Why this?</span>
-            <input id="f-why-new" type="text" placeholder="输入后保存，下次可直接选">
-          </label>
-
-          <div class="field-row">
-            <label class="field">
-              <span>收录日期</span>
-              <input id="f-date" type="date">
-            </label>
-            <label class="check-field" data-for="book">
-              <input id="f-featured" type="checkbox" checked>
-              <span>放入「今日一页」候选</span>
-            </label>
-          </div>
-
-          <div class="form-actions">
-            <button class="button button-dark button-sm" type="submit" id="saveBtn">保存摘录</button>
-            <button class="button button-outline button-sm" type="button" id="cancelBtn" hidden>取消编辑</button>
-            <button class="btn-mini is-danger" type="button" id="deleteBtn" hidden>删除这一则</button>
-          </div>
-          <p class="field-hint">带 * 的字段为必填，主题可多选。书籍摘录会按书名归入「书摘馆」，影视台词归入「影视馆」，两者都会按所选主题出现在「主题馆」；只有书籍能进入「今日一页」。同一本书可以添加多条摘录。保存后写入本地草稿，不会改动已上传的文件。</p>
-        </form>
-      </section>
+    <section class="hub-note">
+      <p>第一次使用？先在「发布上线」页保存一个 GitHub 令牌，之后每次改完都能直接发布。令牌只保存在你自己的浏览器里。</p>
+    </section>
   </main>
-
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <script src="data/excerpts.js"></script>
-  <script src="assets/shared.js"></script>
-  <script src="assets/admin.js"></script>
 </body>
 </html>

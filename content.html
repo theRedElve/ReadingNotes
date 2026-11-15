@@ -19,7 +19,8 @@
     </a>
     <div class="topbar-actions">
       <span class="save-state" id="saveState">已载入文件数据</span>
-      <a class="button button-outline button-sm" href="admin.html">＋ 新增内容</a>
+      <a class="button button-outline button-sm" href="publish.html">发布上线</a>
+      <a class="button button-outline button-sm" href="admin-form.html">＋ 新增内容</a>
       <a class="button button-outline button-sm" href="index.html">返回站点 →</a>
     </div>
   </header>
@@ -43,7 +44,7 @@
         <label class="btn-mini" for="importFile" role="button" tabindex="0">导入数据</label>
         <input id="importFile" type="file" accept=".js,.json,application/json,text/javascript" hidden>
         <button class="btn-mini" type="button" id="resetFile">使用文件数据</button>
-        <a class="btn-mini" href="admin.html">＋ 新增</a>
+        <a class="btn-mini" href="admin-form.html">＋ 新增</a>
       </div>
 
       <input class="admin-search" id="adminSearch" type="search" placeholder="搜索书名、片名、作者、导演或句子……" aria-label="搜索已有内容">
@@ -65,21 +66,6 @@
       </div>
 
       <div class="admin-list" id="adminList"></div>
-    </section>
-
-    <section class="editor-panel publish-panel" aria-labelledby="publishTitle">
-      <div class="panel-head">
-        <h2 id="publishTitle">发布上线</h2>
-        <span class="count" id="publishState">未连接</span>
-      </div>
-      <p class="field-hint">保存 GitHub 令牌后，新增、修改、删除、恢复都会先在本页生效；确认页面效果无误后点「立即发布」，才会提交到 main 分支，GitHub Pages 约 1 分钟后更新。令牌只保存在当前浏览器，可随时清除。</p>
-      <div class="publish-row">
-        <input id="ghToken" name="gh-token-value" class="token-input" type="text" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore aria-label="GitHub 令牌">
-        <button class="btn-mini" id="saveToken" type="button">保存令牌</button>
-        <button class="btn-mini" id="clearToken" type="button">清除令牌</button>
-        <button class="btn-mini is-primary" id="publishNow" type="button">立即发布</button>
-      </div>
-      <p class="field-hint" id="publishNote">令牌类型选 Fine-grained，仓库选 reading-notes，权限只需 Contents → Read and write。</p>
     </section>
 
     <section class="editor-panel trash-panel" id="trashPanel" hidden aria-labelledby="trashTitle">

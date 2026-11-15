@@ -46,6 +46,10 @@
       </nav>
 
       <div class="header-actions">
+        <a class="admin-entry" href="admin.html">
+          <span class="admin-entry-copy"><strong>管理台</strong><small>ADMIN</small></span>
+          <span class="admin-entry-arrow" aria-hidden="true">→</span>
+        </a>
         <p class="sidebar-caption">把读过的句子，<br>留在能再遇见的地方。</p>
       </div>
     </div>
@@ -306,14 +310,6 @@
 
       <!-- ================= 04 首页 ================= -->
       <section class="view about-page" id="home" data-view="home" hidden>
-        <div class="home-topbar">
-          <div class="home-actions">
-            <button class="home-action" type="button" data-random>随手翻一页</button>
-            <a class="home-action is-solid" href="admin.html">更新内容</a>
-            <a class="home-action" href="content.html">全部内容</a>
-          </div>
-        </div>
-
         <header class="page-intro">
           <div>
             <span class="eyebrow">HOME · SHIYE</span>
@@ -348,13 +344,13 @@
 
         <section class="about-strip">
           <div class="about-copy">
-            <span class="eyebrow">EDITOR'S DESK</span>
-            <h2>想添一本新书，<br>或补一句台词？</h2>
-            <p>进入更新入口，填写书籍或影视信息与摘录，保存后导出 <code>excerpts.js</code> 覆盖站点数据文件即可。</p>
+            <span class="eyebrow">RANDOM PAGE</span>
+            <h2>不知道该读哪一句？<br>随手翻一页。</h2>
+            <p>不必从头读起。点一下，随机回到某一本书的某一页，或者某一句台词。</p>
           </div>
           <div class="about-actions">
-            <a class="button button-paper" href="admin.html">更新内容 →</a>
-            <p class="about-hint">静态站点 · 本地草稿 · 一键导出</p>
+            <button class="button button-paper" type="button" data-random>随手翻一页 →</button>
+            <p class="about-hint">随机 · 每一次都不太一样</p>
           </div>
         </section>
       </section>
@@ -375,7 +371,7 @@
         <a href="#library">书摘馆</a>
         <a href="#screen">影视馆</a>
         <a href="#themes">主题馆</a>
-        <a href="admin.html">更新内容</a>
+        <a href="admin.html">管理台</a>
       </nav>
       <p class="footer-note">© <span data-year>2026</span> SHIYE LIBRARY · 摘录版权归原作者所有</p>
     </div>
