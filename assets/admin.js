@@ -39,13 +39,6 @@
       medium: document.getElementById("f-medium"),
       date: document.getElementById("f-date"),
       quote: document.getElementById("f-quote"),
-      translation: document.getElementById("f-translation"),
-      douban: document.getElementById("f-douban"),
-      doubanNew: document.getElementById("f-douban-new"),
-      doubanNewField: document.getElementById("newDoubanField"),
-      why: document.getElementById("f-why"),
-      whyNew: document.getElementById("f-why-new"),
-      whyNewField: document.getElementById("newWhyField"),
       featured: document.getElementById("f-featured")
     }
   };
@@ -164,8 +157,6 @@
       medium: type === "film" ? (item.medium === "剧集" ? "剧集" : "电影") : "",
       quote: String(item.quote || "").trim(),
       translation: String(item.translation || "").trim(),
-      doubanTag: String(item.doubanTag || "").trim(),
-      whyThis: String(item.whyThis || "").trim(),
       date: item.date || S.todayISO(),
       featured: type === "book" ? Boolean(item.featured) : false
     };
@@ -256,32 +247,6 @@
       }
       return acc;
     }, []);
-  }
-
-  function fillTagSelect(select, values, newLabel) {
-    var current = select.value;
-    select.innerHTML = '<option value="">未选择</option>' +
-      values.map(function (value) {
-        return '<option value="' + esc(value) + '">' + esc(value) + "</option>";
-      }).join("") +
-      '<option value="__new__">' + newLabel + "</option>";
-    select.value = current && (current === "__new__" || values.indexOf(current) !== -1) ? current : "";
-  }
-
-  function renderTagOptions() {
-    fillTagSelect(els.fields.douban, tagValues("doubanTag"), "＋ 新增标签…");
-    fillTagSelect(els.fields.why, tagValues("whyThis"), "＋ 新增选项…");
-    renderEraOptions(els.fields.era.value);
-    syncTagFields();
-  }
-
-  function syncTagFields() {
-    els.fields.doubanNewField.hidden = els.fields.douban.value !== "__new__";
-    els.fields.whyNewField.hidden = els.fields.why.value !== "__new__";
-  }
-
-  function tagValue(select, input) {
-    return select.value === "__new__" ? input.value.trim() : select.value;
   }
 
   function eraValues() {
@@ -434,11 +399,6 @@
     els.fields.date.value = S.todayISO();
     els.fields.featured.checked = true;
     els.fields.newBook.value = "";
-    els.fields.douban.value = "";
-    els.fields.why.value = "";
-    els.fields.doubanNew.value = "";
-    els.fields.whyNew.value = "";
-    syncTagFields();
     applyType();
     syncWorkLock();
     els.formTitle.textContent = lockedType === "film"
@@ -484,9 +444,6 @@
       medium: els.fields.medium.value,
       date: els.fields.date.value || S.todayISO(),
       quote: els.fields.quote.value.trim(),
-      translation: els.fields.translation.value.trim(),
-      doubanTag: tagValue(els.fields.douban, els.fields.doubanNew),
-      whyThis: tagValue(els.fields.why, els.fields.whyNew),
       featured: els.fields.featured.checked
     };
   }
@@ -556,7 +513,7 @@
       return;
     }
 
-    renderTagOptions();
+    renderEraOptions(els.fields.era.value);
     resetForm(false);
   });
 
@@ -566,9 +523,7 @@
   els.fields.themes.addEventListener("click", function (event) {
     if (event.target.closest("#themeAdd")) addThemeClicked();
   });
-  renderTagOptions();
-  els.fields.douban.addEventListener("change", syncTagFields);
-  els.fields.why.addEventListener("change", syncTagFields);
+  renderEraOptions("");
   els.fields.era.addEventListener("change", syncEraField);
   setSaveState();
 

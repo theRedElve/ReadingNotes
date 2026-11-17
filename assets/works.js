@@ -28,6 +28,12 @@
     coverImg: document.getElementById("w-cover-img"),
     medium: document.getElementById("w-medium"),
     mediumField: document.getElementById("w-medium-field"),
+    douban: document.getElementById("w-douban"),
+    doubanNew: document.getElementById("w-douban-new"),
+    doubanNewField: document.getElementById("newWDoubanField"),
+    why: document.getElementById("w-why"),
+    whyNew: document.getElementById("w-why-new"),
+    whyNewField: document.getElementById("newWWhyField"),
     titleLabel: document.getElementById("w-title-label"),
     authorLabel: document.getElementById("w-author-label"),
     publisherLabel: document.getElementById("w-publisher-label"),
@@ -93,6 +99,48 @@
     return excerpts.filter(function (item) {
       return (item.type === "film" ? "film" : "book") === work.type && item.book === work.title;
     }).length;
+  }
+
+  function tagValues(key) {
+    var seen = {};
+    return works.reduce(function (acc, work) {
+      var value = String(work[key] || "").trim();
+      if (value && !seen[value]) {
+        seen[value] = true;
+        acc.push(value);
+      }
+      return acc;
+    }, []);
+  }
+
+  function fillTagSelect(select, values, newLabel, value) {
+    select.innerHTML = '<option value="">未选择</option>' + values.map(function (row) {
+      return '<option value="' + esc(row) + '">' + esc(row) + "</option>";
+    }).join("") + '<option value="__new__">' + newLabel + "</option>";
+    select.value = value && values.indexOf(value) !== -1 ? value : "";
+  }
+
+  function renderTagOptions(current) {
+    var doubanValues = tagValues("doubanTag");
+    var whyValues = tagValues("whyThis");
+    var douban = current ? String(current.doubanTag || "").trim() : "";
+    var why = current ? String(current.whyThis || "").trim() : "";
+    if (douban && doubanValues.indexOf(douban) === -1) doubanValues.push(douban);
+    if (why && whyValues.indexOf(why) === -1) whyValues.push(why);
+    fillTagSelect(els.douban, doubanValues, "＋ 新增标签…", douban);
+    fillTagSelect(els.why, whyValues, "＋ 新增选项…", why);
+    els.doubanNew.value = "";
+    els.whyNew.value = "";
+    syncTagFields();
+  }
+
+  function syncTagFields() {
+    els.doubanNewField.hidden = els.douban.value !== "__new__";
+    els.whyNewField.hidden = els.why.value !== "__new__";
+  }
+
+  function tagValue(select, input) {
+    return select.value === "__new__" ? input.value.trim() : select.value.trim();
   }
 
   function fillAuthors() {
@@ -224,6 +272,7 @@
     coverData = work ? work.cover || "" : "";
     paintCover();
     els.medium.value = work && work.medium === "剧集" ? "剧集" : "电影";
+    renderTagOptions(work);
     els.form.hidden = false;
     syncAddButtons();
     els.form.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -236,6 +285,7 @@
     els.form.reset();
     coverData = "";
     paintCover();
+    syncTagFields();
     syncAddButtons();
   }
 
@@ -321,6 +371,9 @@
     sort = els.sortSelect.value;
     render();
   });
+
+  els.douban.addEventListener("change", syncTagFields);
+  els.why.addEventListener("change", syncTagFields);
 
   els.clear.addEventListener("click", function () {
     query = "";
@@ -426,6 +479,8 @@
       era: formType === "book" ? els.era.value.trim() : "",
       translator: formType === "book" ? els.translator.value.trim() : "",
       cover: coverData,
+      doubanTag: tagValue(els.douban, els.doubanNew),
+      whyThis: tagValue(els.why, els.whyNew),
       medium: formType === "film" ? els.medium.value : ""
     };
 

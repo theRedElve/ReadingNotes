@@ -5,12 +5,7 @@
   var THEMES = [
     { name: "自我", en: "SELF", color: "green", char: "自" },
     { name: "行动", en: "ACTION", color: "red", char: "行" },
-    { name: "孤独", en: "SOLITUDE", color: "blue", char: "孤" },
-    { name: "时间", en: "TIME", color: "brown", char: "时" },
-    { name: "自由", en: "FREEDOM", color: "blue", char: "游" },
-    { name: "读书", en: "READING", color: "brown", char: "读" },
-    { name: "自然", en: "NATURE", color: "green", char: "山" },
-    { name: "希望", en: "HOPE", color: "red", char: "望" }
+    { name: "自由", en: "FREEDOM", color: "blue", char: "游" }
   ];
 
   var THEME_MAP = {};
@@ -271,6 +266,8 @@
       era: type === "book" ? String((work && work.era) || "").trim() : "",
       translator: type === "book" ? String((work && work.translator) || "").trim() : "",
       cover: String((work && work.cover) || ""),
+      doubanTag: String((work && work.doubanTag) || "").trim(),
+      whyThis: String((work && work.whyThis) || "").trim(),
       medium: type === "film" ? (work && work.medium === "剧集" ? "剧集" : "电影") : ""
     };
   }
@@ -350,6 +347,8 @@
         era: next.type === "book" ? (next.era || row.era) : "",
         translator: next.type === "book" ? (next.translator || row.translator) : "",
         cover: next.cover || row.cover,
+        doubanTag: next.doubanTag || row.doubanTag,
+        whyThis: next.whyThis || row.whyThis,
         medium: next.type === "film" ? (next.medium || row.medium) : ""
       };
     });
